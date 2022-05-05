@@ -21,7 +21,7 @@ END_MESSAGE_MAP()
 
 // CELCVMatchToolApp 建構
 
-CELCVMatchToolApp::CELCVMatchToolApp()
+CELCVMatchToolApp::CELCVMatchToolApp()//123
 {
 	// 支援重新啟動管理員
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
