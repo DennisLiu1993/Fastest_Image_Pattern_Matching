@@ -200,7 +200,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DlgTestCRectTracker.h" />
     <ClInclude Include="ELCVMatchTool.h" />
     <ClInclude Include="ELCVMatchToolDlg.h" />
     <ClInclude Include="framework.h" />
@@ -209,7 +208,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DlgTestCRectTracker.cpp" />
     <ClCompile Include="ELCVMatchTool.cpp" />
     <ClCompile Include="ELCVMatchToolDlg.cpp" />
     <ClCompile Include="pch.cpp">
