@@ -1,4 +1,4 @@
-# Fastet Image Pattern Matching
+# Fastest Image Pattern Matching
 
 <p dir="auto">Using C++/MFC/OpenCV to build a NCC-Based Image Matching algorithm</p>
 <p dir="auto">The Pattern Matching algorithm is based on Normalized Cross Correlation, and the formular is as followed:</p>
