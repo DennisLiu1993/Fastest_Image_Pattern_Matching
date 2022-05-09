@@ -192,4 +192,18 @@ public:
 	double m_dTolerance4;
 
 	void PumpMessages ();
+	CComboBox m_cbLanSelect;
+
+
+	void ChangeLanguage (CString strLan);
+	CString m_strLanIndex;
+	CString m_strLanScore;
+	CString m_strLanAngle;
+	CString m_strLanPosX;
+	CString m_strLanPosY;
+	CString m_strLanExecutionTime;
+	CString m_strLanSourceImageSize;
+	CString m_strLanDstImageSize;
+	CString m_strLanPixelPos;
+	afx_msg void OnCbnSelchangeComboLan ();
 };

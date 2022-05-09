@@ -31,11 +31,5 @@
 *.out
 *.app
 
-# Visual Studio cache/options directory
+# Visual Studio 2019 cache/options directory
 .vs/
-
-#BuildResults
-[Dd]ebug/
-[Rr]elease/
-.idb
-.pdb

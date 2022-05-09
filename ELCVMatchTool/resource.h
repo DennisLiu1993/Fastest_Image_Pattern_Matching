@@ -1,6 +1,6 @@
 ﻿//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ 產生的 Include 檔案。
-// 由 ELCVMatchTool.rc 使用
+// Microsoft Visual C++ generated include file.
+// Used by ELCVMatchTool.rc
 //
 #define IDD_ELCVMATCHTOOL_DIALOG        102
 #define IDR_MAINFRAME                   128
@@ -40,6 +40,8 @@
 #define IDC_EDIT_TOLERANCE3             1028
 #define IDC_EDIT_TOLERANCE4             1029
 #define IDC_BUTTON_CHANGE_TOLERANCE_MODE 1030
+#define IDC_STATIC_LANGUAGE             1031
+#define IDC_COMBO_LAN                   1032
 #define ID_32771                        32771
 #define ID_LOAD_SRC                     32772
 #define ID_32773                        32773
@@ -51,7 +53,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         32775
-#define _APS_NEXT_CONTROL_VALUE         1031
+#define _APS_NEXT_CONTROL_VALUE         1033
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

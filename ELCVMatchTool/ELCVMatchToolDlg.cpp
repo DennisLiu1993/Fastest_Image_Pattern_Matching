@@ -104,6 +104,7 @@ void CELCVMatchToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text (pDX, IDC_EDIT_TOLERANCE2, m_dTolerance2);
 	DDX_Text (pDX, IDC_EDIT_TOLERANCE3, m_dTolerance3);
 	DDX_Text (pDX, IDC_EDIT_TOLERANCE4, m_dTolerance4);
+	DDX_Control (pDX, IDC_COMBO_LAN, m_cbLanSelect);
 }
 
 BEGIN_MESSAGE_MAP(CELCVMatchToolDlg, CDialogEx)
@@ -123,6 +124,7 @@ BEGIN_MESSAGE_MAP(CELCVMatchToolDlg, CDialogEx)
 	ON_WM_SETCURSOR ()
 	ON_WM_LBUTTONDOWN ()
 	ON_BN_CLICKED (IDC_BUTTON_CHANGE_TOLERANCE_MODE, &CELCVMatchToolDlg::OnBnClickedButtonChangeToleranceMode)
+	ON_CBN_SELCHANGE (IDC_COMBO_LAN, &CELCVMatchToolDlg::OnCbnSelchangeComboLan)
 END_MESSAGE_MAP()
 
 
@@ -136,6 +138,8 @@ BOOL CELCVMatchToolDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 設定大圖示
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 	// TODO: 在此加入額外的初始設定
+	
+
 	cvNamedWindow ("SrcView");
 	HWND hWnd = (HWND)cvGetWindowHandle ("SrcView");
 	HWND hParent = ::GetParent (hWnd);
@@ -155,15 +159,16 @@ BOOL CELCVMatchToolDlg::OnInitDialog()
 	m_Menu.LoadMenuW (IDR_MENU_FILE);
 	SetMenu (NULL);
 	SetMenu (&m_Menu);
+	
 
 	//拖曳檔案
 	DragAcceptFiles ();
 	//訊息
-	m_listMsg.InsertColumn (0, L"編號", LVCFMT_CENTER, 50);
-	m_listMsg.InsertColumn (1, L"分數", LVCFMT_CENTER, 70);
-	m_listMsg.InsertColumn (2, L"角度(deg)", LVCFMT_CENTER, 100);
-	m_listMsg.InsertColumn (3, L"座標x", LVCFMT_CENTER, 110);
-	m_listMsg.InsertColumn (4, L"座標y", LVCFMT_CENTER, 110);
+	m_listMsg.InsertColumn (0, m_strLanIndex, LVCFMT_CENTER, 50);
+	m_listMsg.InsertColumn (1, m_strLanScore, LVCFMT_CENTER, 70);
+	m_listMsg.InsertColumn (2, m_strLanAngle, LVCFMT_CENTER, 100);
+	m_listMsg.InsertColumn (3, m_strLanPosX, LVCFMT_CENTER, 110);
+	m_listMsg.InsertColumn (4, m_strLanPosY, LVCFMT_CENTER, 110);
 
 	m_listMsg.SetExtendedStyle (LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_GRIDLINES);
 	m_iMessageCount = 0;
@@ -186,6 +191,10 @@ BOOL CELCVMatchToolDlg::OnInitDialog()
 	m_statusBar.SetPaneInfo (1, indicators[1], SBPS_STRETCH, 200);
 	m_statusBar.SetPaneInfo (2, indicators[2], SBPS_STRETCH, 200);
 	m_statusBar.SetPaneInfo (3, indicators[3], SBPS_STRETCH, 200);
+	m_statusBar.SetPaneText (0, m_strLanExecutionTime);
+	m_statusBar.SetPaneText (1, m_strLanSourceImageSize);
+	m_statusBar.SetPaneText (2, m_strLanDstImageSize);
+	m_statusBar.SetPaneText (3, m_strLanPixelPos);
 	m_statusBar.GetClientRect (&rectState);
 	m_statusBar.MoveWindow (0, rect.bottom - rectState.Height (), rect.right, rectState.Height ());// 调整状态栏的位置和大小
 
@@ -226,10 +235,17 @@ BOOL CELCVMatchToolDlg::OnInitDialog()
 	GetDlgItem (IDC_EDIT_TOLERANCE2)->EnableWindow (FALSE);
 	GetDlgItem (IDC_EDIT_TOLERANCE3)->EnableWindow (FALSE);
 	GetDlgItem (IDC_EDIT_TOLERANCE4)->EnableWindow (FALSE);
+
+	//Language
+	m_cbLanSelect.AddString (L"Chinese (Tranditional)");
+	m_cbLanSelect.AddString (L"Chinese (Simplified)");
+	m_cbLanSelect.AddString (L"English");
+	m_cbLanSelect.SetCurSel (2);
+
+	//語言
+	ChangeLanguage (L"English");
 	//GetDlgItem (IDC_STATIC_MAX_POS)->SetFont (&font);
-	//
-	/*m_dlg.Create (IDD_DIALOG1);
-	m_dlg.ShowWindow (SW_SHOW);*/
+	
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
@@ -561,6 +577,112 @@ void CELCVMatchToolDlg::PumpMessages ()
 			DispatchMessage (&msg);
 		}
 	}
+}
+bool GetExeDir (_TCHAR* psz)
+{
+	if (!psz)
+		return false;
+
+	_TCHAR sz[MAX_PATH] = _T ("");
+	GetModuleFileName (NULL, sz, MAX_PATH);
+
+	_TCHAR szDrv[_MAX_DRIVE] = _T ("");
+	_TCHAR szDir[_MAX_DIR] = _T ("");
+	_TCHAR szName[_MAX_FNAME] = _T ("");
+	_TCHAR szExt[_MAX_EXT] = _T ("");
+	_tsplitpath_s (sz, szDrv, _MAX_DRIVE, szDir, _MAX_DIR, szName, _MAX_FNAME, szExt, _MAX_EXT);
+
+	_stprintf_s (psz, MAX_PATH, _T ("%s%s"), szDrv, szDir);
+
+	return true;
+}
+void CELCVMatchToolDlg::ChangeLanguage (CString strLan)
+{
+	if (strLan.CompareNoCase (L"Chinese (Tranditional)") == 0)
+		strLan = L"Chinese_Traditional";
+	else if (strLan.CompareNoCase (L"Chinese (Simplified)") == 0)
+		strLan = L"Chinese_Simplified";
+	else
+		strLan = L"English";
+
+	_TCHAR szExe[MAX_PATH] = _T ("");
+	GetExeDir (szExe);
+	CString strLanPath (szExe);
+	strLanPath += L"MatchTool.lang";
+
+	_TCHAR szBuf[MAX_PATH];
+
+	GetPrivateProfileString (strLan, L"ImageMatchTool", L"Image Match Tool", szBuf, _MAX_PATH, strLanPath);
+	SetWindowText (szBuf);
+
+	GetPrivateProfileString (strLan, L"File", L"File", szBuf, _MAX_PATH, strLanPath);
+	m_Menu.ModifyMenuW (0, MF_BYPOSITION | MF_STRING, 0, szBuf);
+	CMenu *pSubMenu = m_Menu.GetSubMenu (0);
+	int iMenuItemCount = pSubMenu->GetMenuItemCount ();
+	for (int i = 0; i < iMenuItemCount; i++)
+		pSubMenu->DeleteMenu (0, MF_BYPOSITION);
+	GetPrivateProfileString (strLan, L"ReadSourceImage", L"Read Source Image", szBuf, _MAX_PATH, strLanPath);
+	pSubMenu->InsertMenuW (0, MF_BYPOSITION | MF_STRING, ID_LOAD_SRC, szBuf);
+	GetPrivateProfileString (strLan, L"ReadDstImage", L"Read Dst Image", szBuf, _MAX_PATH, strLanPath);
+	pSubMenu->InsertMenuW (1, MF_BYPOSITION | MF_STRING, ID_LOAD_DST, szBuf);
+
+
+	GetPrivateProfileString (strLan, L"ParameterSetting", L"Parameter Setting", szBuf, _MAX_PATH, strLanPath);
+	GetDlgItem (IDC_GROUP_PARAMS)->SetWindowText (szBuf);
+	GetPrivateProfileString (strLan, L"TargetNumber", L"Target Number:", szBuf, _MAX_PATH, strLanPath);
+	GetDlgItem (IDC_STATIC_MAX_POS)->SetWindowText (szBuf);
+
+	GetPrivateProfileString (strLan, L"MaxOverLapRatio", L"Max OverLap Ratio:", szBuf, _MAX_PATH, strLanPath);
+	GetDlgItem (IDC_STATIC_MAX_OVERLAP)->SetWindowText (szBuf);
+	GetPrivateProfileString (strLan, L"Score(Similarity)", L"Score (Similarity):", szBuf, _MAX_PATH, strLanPath);
+	GetDlgItem (IDC_STATIC_SCORE)->SetWindowText (szBuf);
+	GetPrivateProfileString (strLan, L"ToleranceAngle", L"Tolerance Angle:", szBuf, _MAX_PATH, strLanPath);
+	GetDlgItem (IDC_STATIC_TOLERANCE_ANGLE)->SetWindowText (szBuf);
+	GetPrivateProfileString (strLan, L"MinReducedArea", L"Min Reduced Area", szBuf, _MAX_PATH, strLanPath);
+	GetDlgItem (IDC_STATIC_MIN_REDUCE_AREA)->SetWindowText (szBuf);
+	GetPrivateProfileString (strLan, L"Execute", L"Execute", szBuf, _MAX_PATH, strLanPath);
+	GetDlgItem (IDC_BUTTON_EXECUTE)->SetWindowText (szBuf);
+	GetPrivateProfileString (strLan, L"Language", L"Language:", szBuf, _MAX_PATH, strLanPath);
+	GetDlgItem (IDC_STATIC_LANGUAGE)->SetWindowText (szBuf);
+
+	GetPrivateProfileString (strLan, L"Index", L"Index", szBuf, _MAX_PATH, strLanPath);
+	m_strLanIndex = szBuf;
+	GetPrivateProfileString (strLan, L"Score", L"Score", szBuf, _MAX_PATH, strLanPath);
+	m_strLanScore = szBuf;
+	GetPrivateProfileString (strLan, L"Angle(deg)", L"Angle (deg)", szBuf, _MAX_PATH, strLanPath);
+	m_strLanAngle = szBuf;
+	GetPrivateProfileString (strLan, L"PosX", L"PosX", szBuf, _MAX_PATH, strLanPath);
+	m_strLanPosX = szBuf;
+	GetPrivateProfileString (strLan, L"PosY", L"PosY", szBuf, _MAX_PATH, strLanPath);
+	m_strLanPosY = szBuf;
+	GetPrivateProfileString (strLan, L"ExecutionTime", L"Execution Time", szBuf, _MAX_PATH, strLanPath);
+	m_strLanExecutionTime = szBuf;
+	GetPrivateProfileString (strLan, L"SourceImageSize", L"Source Image Size", szBuf, _MAX_PATH, strLanPath);
+	m_strLanSourceImageSize = szBuf;
+	GetPrivateProfileString (strLan, L"DstImageSize", L"Dst Image Size", szBuf, _MAX_PATH, strLanPath);
+	m_strLanDstImageSize = szBuf;
+	GetPrivateProfileString (strLan, L"PixelPos", L"Pixel Pos", szBuf, _MAX_PATH, strLanPath);
+	m_strLanPixelPos = szBuf;
+
+	m_statusBar.SetPaneText (0, m_strLanExecutionTime);
+	m_statusBar.SetPaneText (1, m_strLanSourceImageSize);
+	m_statusBar.SetPaneText (2, m_strLanDstImageSize);
+	m_statusBar.SetPaneText (3, m_strLanPixelPos);
+
+	for (int i = 0; i < 5; i++)
+	{
+		LVCOLUMN lvCol;
+		::ZeroMemory ((void *)&lvCol, sizeof (LVCOLUMN));
+		lvCol.mask = LVCF_TEXT;
+		m_listMsg.GetColumn (i, &lvCol);
+		 CString str = (i == 0) ? m_strLanIndex :
+			i == 1 ? m_strLanScore : 
+			i == 2 ? m_strLanAngle :
+			i == 3 ? m_strLanPosX : m_strLanPosY;
+		 lvCol.pszText = (LPWSTR)(LPCWSTR)str;
+		m_listMsg.SetColumn (i, &lvCol);
+	}
+	
 }
 //OCR
 bool comparePosWithY (const pair<Point2d, char>& lhs, const pair<Point2d, char>& rhs) { return lhs.first.y < rhs.first.y; }
@@ -905,7 +1027,7 @@ BOOL CELCVMatchToolDlg::Match ()
 	}
 	FilterWithRotatedRect (&vecAllResult, CV_TM_CCOEFF_NORMED, m_dMaxOverlap);
 	//最後再次濾掉重疊
-	m_strExecureTime.Format (L"執行時間 : %d ms", int (clock () - d1));
+	m_strExecureTime.Format (L"%s : %d ms", m_strLanExecutionTime, int (clock () - d1));
 	m_statusBar.SetPaneText (0, m_strExecureTime);
 	if (vecAllResult.size () == 0)
 		return FALSE;
@@ -1446,7 +1568,7 @@ void CELCVMatchToolDlg::LoadSrc ()
 	//防止顯示不同比例圖片時DC殘留
 	RefreshSrcView ();
 	CString strSize;
-	strSize.Format (L"來源影像尺寸 : %d X %d", m_matSrc.cols, m_matSrc.rows);
+	strSize.Format (L"%s : %d X %d", m_strLanSourceImageSize, m_matSrc.cols, m_matSrc.rows);
 	m_statusBar.SetPaneText (1, strSize);
 	
 }
@@ -1460,7 +1582,7 @@ void CELCVMatchToolDlg::LoadDst ()
 	m_dDstScale = min (dScaleX, dScaleY);
 	RefreshDstView ();
 	CString strSize;
-	strSize.Format (L"特徵影像尺寸 : %d X %d", m_matDst.cols, m_matDst.rows);
+	strSize.Format (L"%s : %d X %d", m_strLanDstImageSize, m_matDst.cols, m_matDst.rows);
 	m_statusBar.SetPaneText (2, strSize);
 }
 double g_dCompensationX = 0;//補償ScrollBar取整數造成的誤差
@@ -1824,7 +1946,7 @@ void MouseCall (int event, int x, int y, int flag, void* pUserData)
 		int iX = int (x / pDlg->m_dNewScale);
 		int iY = int (y / pDlg->m_dNewScale);
 		CString strPos;
-		strPos.Format (L"像素座標 : %d, %d", iX, iY);
+		strPos.Format (L"%s : %d, %d", pDlg->m_strLanPixelPos, iX, iY);
 		pDlg->m_statusBar.SetPaneText (3, strPos);
 	}
 	//Tracker
@@ -1866,3 +1988,12 @@ void CELCVMatchToolDlg::OnBnClickedButtonChangeToleranceMode ()
 }
 
 
+
+
+void CELCVMatchToolDlg::OnCbnSelchangeComboLan ()
+{
+	int iSel = m_cbLanSelect.GetCurSel ();
+	CString strLan;
+	m_cbLanSelect.GetLBText (iSel, strLan);
+	ChangeLanguage (strLan);
+}
