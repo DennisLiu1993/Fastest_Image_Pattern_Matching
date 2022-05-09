@@ -20,6 +20,11 @@ The Pattern Matching algorithm is based on Normalized Cross Correlation, and the
 12.  Go to "Linker-Input", and type in library name (for me, it is opencv_world310d_vs2017.lib)
 13.  Make sure that your opencv.dll is in the same directory as .exe of this project
 
+# usage of this project
+1. Drag Source Image to the Left Area
+2. Drag Dst Image to the Right Top Area
+3. Push "Execute Button"
+![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/ManualImage/First%20Step.jpg)
 # tests
 Test 1
 
@@ -45,3 +50,5 @@ Test 6
 
 # Demonstration Video Link
 https://www.youtube.com/watch?v=2h_lN79SpMM&ab_channel=%E5%8A%89%E6%9F%8F%E5%AF%AC
+# This project can also be used as OCR detection
+https://www.youtube.com/watch?v=lM0NK6xVNfg&ab_channel=%E5%8A%89%E6%9F%8F%E5%AF%AC
