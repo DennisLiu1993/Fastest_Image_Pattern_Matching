@@ -33,3 +33,7 @@
 
 # Visual Studio 2019 cache/options directory
 .vs/
+[Dd]ebug
+[Rr]elease
+.idb
+.pdb
