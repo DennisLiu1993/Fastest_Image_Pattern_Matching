@@ -55,7 +55,8 @@ test5
 1. **Target Number**: possible max objects you want to find in the inspection image
 2. **Max OverLap Ratio**: (the overlap area between two findings) / area of golden sample
 3. **Score (Similarity)**: accepted similarity of findings (0~1), lower score causes more execution time
-4. **Tolerance Angle**: possible rotation of targets in the inspection image (0~180, meaning search range from -180~180), higher angle causes more execution time
+4. **Tolerance Angle**: possible rotation of targets in the inspection image (180 means search range is from -180~180), higher angle causes more execution time
+      or you can push "↓" button to select 2 angle range
 5. **Min Reduced Area**: the min area of toppest level in image pyrimid (trainning stage)
 
 # about outputs
