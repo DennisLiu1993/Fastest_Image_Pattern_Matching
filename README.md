@@ -52,7 +52,19 @@ test5
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result6.jpg)
 
 # Parameters Setting
+1. **Target Number**: possible max objects you want to find in the inspection image
+2. **Max OverLap Ratio**: (the overlap area between two findings) / area of golden sample
+3. **Score (Similarity)**: accepted similarity of findings (0~1), lower score causes more execution time
+4. **Tolerance Angle**: possible rotation of targets in the inspection image (0~180, meaning search range from -180~180), higher angle causes more execution time
+5. **Min Reduced Area**: the min area of toppest level in image pyrimid (trainning stage)
+
+# about outputs
+1. results are sorted by score (decreasing order)
+2. Angles: inspected rotation of findings
+3. PosX, PosY: pixel position of findings
+
 # Demonstration Video Link
 https://www.youtube.com/watch?v=2h_lN79SpMM&ab_channel=%E5%8A%89%E6%9F%8F%E5%AF%AC
-#This project can also be used as OCR detection
+
+# This project can also be used as OCR detection
 https://www.youtube.com/watch?v=lM0NK6xVNfg&ab_channel=%E5%8A%89%E6%9F%8F%E5%AF%AC
