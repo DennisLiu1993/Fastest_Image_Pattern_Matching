@@ -72,10 +72,12 @@ test5
 3. PosX, PosY: pixel position of findings
 
 # Demonstration Video
-[youtubelink](https://www.youtube.com/watch?v=2h_lN79SpMM)
+[youtube link](https://www.youtube.com/watch?v=2h_lN79SpMM)
+
 ![Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/Fastest%20implement%20of%20Image%20Pattern%20Matching%20with%20arbitrary%20rotation%20using%20OpenCV.%E5%9F%BA%E6%96%BCOpenCV%E7%9A%84%E8%B6%85%E5%BF%AB%E9%80%9F%E5%9C%96%E5%83%8F%E5%AE%9A%E4%BD%8D%E6%BC%94%E7%AE%97%E6%B3%95.gif)
 
 # This project can also be used as OCR
-[youtubelink](https://www.youtube.com/watch?v=lM0NK6xVNfg)
+[youtube link](https://www.youtube.com/watch?v=lM0NK6xVNfg)
+
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/NCCBasedOCR.gif)
 
