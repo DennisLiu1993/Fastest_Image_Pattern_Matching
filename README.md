@@ -4,6 +4,13 @@ Using C++/MFC/OpenCV to build a NCC-Based Image Alignment algorithm
 The matching algorithm is based on Normalized Cross Correlation, and the formular is as followed:
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/ManualImage/NCC.jpg)
 
+# improvement
+1. rotation invarian
+2. using image pyrimid as an searching strategy
+3. minimizing the inspection area on the top level of image pyrimid
+4. optimized rotation time from opencv by setting needed "size" and modified rotation matrix
+5. rotation precision is as high as possible
+
 # steps to build this project
 1.	Download Visual Studio 2017 or newer versions
 2.	Check on the option of "x86 and x64 version of C++ MFC"
