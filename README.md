@@ -1,14 +1,15 @@
 # Fastest Image Pattern Matching
+**The fasted template matching implementation on the Internet/**
 
 Using C++/MFC/OpenCV to build a NCC-Based Image Alignment algorithm
 The matching algorithm is based on Normalized Cross Correlation, and the formular is as followed:
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/ManualImage/NCC.jpg)
 
 # improvement
-1. rotation invarian
+1. rotation invariant
 2. using image pyrimid as an searching strategy
 3. minimizing the inspection area on the top level of image pyrimid
-4. optimized rotation time from opencv by setting needed "size" and modified rotation matrix
+4. optimized rotation time from opencv by setting needed "size" and modifying rotation matrix
 5. rotation precision is as high as possible
 
 # steps to build this project
