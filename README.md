@@ -13,7 +13,8 @@ The matching algorithm is based on Normalized Cross Correlation, and the formula
 5. rotation precision is as high as possible
 
 # Comparison with commercial libraries
-Inspection Image Size: 4024 X 3036, Template Size: 762 X 521
+[Inspection Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src7.bmp) Size: 4024 X 3036 
+[Template Size](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Dst7.bmp): 762 X 521
 Libray     |Index | Score | Angle | PosX | PosY | Execution Time
 ---------  |----- |-------|-------| -----  | -----  |----------------------
 My Tool    |0     |   1   | 0.046 |1725.857|1045.433| 112ms
