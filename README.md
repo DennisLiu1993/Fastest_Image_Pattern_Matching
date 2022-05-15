@@ -3,7 +3,7 @@
 
 Using C++/MFC/OpenCV to build a NCC-Based Image Alignment algorithm
 The matching algorithm is based on Normalized Cross Correlation, and the formular is as followed:
-![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual Image/NCC.jpg)
+![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Image/NCC.jpg)
 
 # Improvement
 1. rotation invariant
@@ -51,7 +51,7 @@ Aisys    |2     |  0.979   | 120.000 |1769.63|2099.780|
 
 test0 - with user interface
 
-![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual Image/UIwithResult.jpg)
+![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Image/UIwithResult.jpg)
 
 test1
 
