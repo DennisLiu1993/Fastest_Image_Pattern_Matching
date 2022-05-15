@@ -12,7 +12,21 @@ The matching algorithm is based on Normalized Cross Correlation, and the formula
 4. optimized rotation time from opencv by setting needed "size" and modifying rotation matrix
 5. rotation precision is as high as possible
 
-# steps to build this project
+# Comparison with commercial libraries
+Inspection Image Size: 4024 X 3036, Template Size: 762 X 521
+Libray     |Index | Score | Angle | PosX | PosY | Execution Time
+---------  |----- |-------|-------| -----  | -----  |----------------------
+My Tool    |0     |   1   | 0.046 |1725.857|1045.433| 112ms
+My Tool    |1     |   0.998   | -119.979 |2662.869|1537.446| 
+My Tool    |2     |  0.991   | 120.150 |1768.936|2098.494| 
+Cognex     |0     |   1   | 0.030 |1725.960|1045.470| 125ms
+Cognex     |1     |   0.989   | -119.960 |2663.750|1538.040| 
+Cognex     |2     |  0.983   | 120.090 |1769.250|2099.410| 
+Aisys    |0     |   1   | 0 |1726.000|1045.500| 202ms
+Aisys    |1     |   0.990   | -119.935 |2663.630|1539.060| 
+Aisys    |2     |  0.979   | 120.000 |1769.63|2099.780| 
+
+# Steps to build this project
 1.	Download Visual Studio 2017 or newer versions
 2.	Check on the option of "x86 and x64 version of C++ MFC"
 3.	Install
@@ -27,13 +41,13 @@ The matching algorithm is based on Normalized Cross Correlation, and the formula
 12.	Go to "Linker-Input", and type in library name (for me, it is opencv_world310d_vs2017.lib)
 13.	Make sure that your opencvXX.dll and MatchTool.Lang are in the same directory as .exe of this project
 
-# usage of this project
+# Usage of this project
 1.	Select the Language you want
 2.	Drag Source Image to the Left Area
 3.	Drag Dst Image to the Right Top Area
 4.	Push "Execute Button"
 
-# tests
+# Tests
 
 test0 - with user interface
 
@@ -67,7 +81,7 @@ test5
       or you can push "↓" button to select 2 angle range
 5. **Min Reduced Area**: the min area of toppest level in image pyrimid (trainning stage)
 
-# about outputs
+# About outputs
 1. results are sorted by score (decreasing order)
 2. Angles: inspected rotation of findings
 3. PosX, PosY: pixel position of findings
