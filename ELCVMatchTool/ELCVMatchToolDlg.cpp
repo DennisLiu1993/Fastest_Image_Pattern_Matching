@@ -929,7 +929,7 @@ BOOL CELCVMatchToolDlg::Match ()
 				{
 					double dMatchedAngle = vecMatchParameter[i].dMatchAngle;
 
-					for (int i = -2; i <= 2; i++)
+					for (int i = -1; i <= 1; i++)
 						vecAngles.push_back (dMatchedAngle + dAngleStep * i);
 				}
 				Point2f ptSrcCenter ((vecMatSrcPyr[iLayer].cols - 1) / 2.0f, (vecMatSrcPyr[iLayer].rows - 1) / 2.0f);
