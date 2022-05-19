@@ -39,7 +39,7 @@ obj/
 Debug/
 Release/
 Debug_4X/
-Release_4X
+Release_4X/
 *.opensdf
 *.tlog
 *.log
