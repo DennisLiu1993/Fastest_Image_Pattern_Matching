@@ -2,6 +2,11 @@
 // ELCVMatchToolDlg.h: 標頭檔
 //
 #include <opencv2/opencv.hpp>
+#ifdef OPENCV_4X
+#include <opencv2/highgui/highgui_c.h>
+#include <opencv2/imgproc/imgproc_c.h>
+#include <opencv2/imgproc/types_c.h>
+#endif
 using namespace cv;
 using namespace std;
 #pragma once

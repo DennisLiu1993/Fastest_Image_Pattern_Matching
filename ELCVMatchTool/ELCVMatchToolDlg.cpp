@@ -7,6 +7,7 @@
 #include "ELCVMatchTool.h"
 #include "ELCVMatchToolDlg.h"
 #include "afxdialogex.h"
+
 #ifdef _DEBUG
 //#define new DEBUG_NEW
 #endif

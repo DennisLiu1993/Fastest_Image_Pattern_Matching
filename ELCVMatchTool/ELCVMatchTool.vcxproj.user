@@ -11,4 +11,20 @@
     <DeploymentDirectory>C:\Users\elogic\Desktop\MatchToolRemoteTest</DeploymentDirectory>
     <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_4.X|Win32'">
+    <RemoteDebuggerCommand>C:\Users\elogic\Desktop\MatchToolRemoteTest\ELCVMatchTool.exe</RemoteDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <RemoteDebuggerWorkingDirectory>C:\Users\elogic\Desktop\MatchToolRemoteTest</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerServerName>192.168.1.148</RemoteDebuggerServerName>
+    <DeploymentDirectory>C:\Users\elogic\Desktop\MatchToolRemoteTest</DeploymentDirectory>
+    <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_4.X|Win32'">
+    <RemoteDebuggerCommand>C:\Users\elogic\Desktop\MatchToolRemoteTest\ELCVMatchTool.exe</RemoteDebuggerCommand>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <RemoteDebuggerWorkingDirectory>C:\Users\elogic\Desktop\MatchToolRemoteTest</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerServerName>192.168.1.148</RemoteDebuggerServerName>
+    <DeploymentDirectory>C:\Users\elogic\Desktop\MatchToolRemoteTest</DeploymentDirectory>
+    <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
+  </PropertyGroup>
 </Project>
