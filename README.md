@@ -28,6 +28,8 @@ Aisys    |0     |   1   | 0 |1726.000|1045.500| 202ms
 Aisys    |1     |   0.990   | -119.935 |2663.630|1539.060| 
 Aisys    |2     |  0.979   | 120.000 |1769.63|2099.780| 
 
+note: if you want to get a best performance, please make sure you are using release verson (both this project and OpenCV dll). That's because O2-related significantly affect efficiency, and the difference of Debug and Release can up to 7 times for some cases.
+
 # Steps to build this project
 1.	Download Visual Studio 2017 or newer versions
 2.	Check on the option of "x86 and x64 version of C++ MFC"
@@ -35,13 +37,13 @@ Aisys    |2     |  0.979   | 120.000 |1769.63|2099.780|
 4.	Open ELCVMatchTool.sln
 5.	Upgrade if it is required
 6.	Open this project's property page
-7.	Modified "General-Output Directory" to the .exe directory you want
+7.	Modified "General-Output Directory" to the .exe directory you want (usually the directory where your opencv_worldXX.dll locates)
 8.	Choose the SDK version you have in "General-Windows SDK Version"
 9.	Choose the right toolset you have in "General-Platform Toolset" (for me, it is Visual Studio 2017 (v141))
-10.	Go to "VC++ Directories", and type in "Include Directories" for your own OpenCV
-11.	Type in "Library Directories" for your own OpenCV's library path
-12.	Go to "Linker-Input", and type in library name (for me, it is opencv_world310d_vs2017.lib)
-13.	Make sure that your opencvXX.dll and MatchTool.Lang are in the same directory as .exe of this project
+10.	Go to "VC++ Directories", and type in "Include Directories" for your own OpenCV (e.g. C:\OpenCV3.1\opencv\build\include or C:\OpenCV4.0\opencv\build\include)
+11.	Type in "Library Directories" for your own OpenCV's library path (the directory where your opencv_worldXX.lib locates)
+12.	Go to "Linker-Input", and type in library name (e.g. opencv_world310d_vs2017.lib or opencv_world401d.lib)
+13.	Make sure that your opencv_worldXX.dll and MatchTool.Lang are in the same directory as .exe of this project
 
 # Usage of this project
 1.	Select the Language you want
