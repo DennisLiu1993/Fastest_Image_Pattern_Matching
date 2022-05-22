@@ -46,8 +46,9 @@ note: if you want to get a best performance, please make sure you are using rele
 13.	Make sure that your opencv_worldXX.dll and MatchTool.Lang are in the same directory as .exe of this project
 
 # Adaptation for OpenCV4.X
-Select Debug_4.X or Release_4.X in "Solution Configuration"
+1.Select Debug_4.X or Release_4.X in "Solution Configuration"
 ![image](https://user-images.githubusercontent.com/104763587/169198235-f023ba0f-2039-4f00-8816-d270f7c03575.png)
+2.Do step 10~12 in previous section
 
 
 # Usage of this project
