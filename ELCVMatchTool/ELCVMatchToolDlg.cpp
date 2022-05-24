@@ -86,7 +86,7 @@ void CELCVMatchToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text (pDX, IDC_EDIT_MAX_POS, m_iMaxPos);
 	DDV_MinMaxInt (pDX, m_iMaxPos, 1, 200);
 	DDX_Text (pDX, IDC_EDIT_MAX_OVERLAP, m_dMaxOverlap);
-	DDV_MinMaxDouble (pDX, m_dMaxOverlap, 0, 0.5);
+	DDV_MinMaxDouble (pDX, m_dMaxOverlap, 0, 0.8);
 	DDX_Text (pDX, IDC_EDIT_SCORE, m_dScore);
 	DDV_MinMaxDouble (pDX, m_dScore, 0, 1);
 	DDX_Text (pDX, IDC_EDIT_TOLERANCE_ANGLE, m_dToleranceAngle);
@@ -1594,7 +1594,7 @@ BOOL CELCVMatchToolDlg::OnMouseWheel (UINT nFlags, short zDelta, CPoint pt)
 	POINT pointCursor;
 	GetCursorPos (&pointCursor);
 	ScreenToClient (&pointCursor);
-	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
+	//check the wheel is forward or backward
 	if (zDelta > 0)
 	{
 		if (m_iScaleTimes == MAX_SCALE_TIMES)
@@ -1619,6 +1619,7 @@ BOOL CELCVMatchToolDlg::OnMouseWheel (UINT nFlags, short zDelta, CPoint pt)
 	int iMouseOffsetX = pt.x - (rect.left + 1);
 	int iMouseOffsetY = pt.y - (rect.top + 1);
 
+	//compensationXY is value for slight error in every calculating process
 	double dPixelX = (m_hScrollBar.GetScrollPos () + iMouseOffsetX + g_dCompensationX) / m_dNewScale;
 	double dPixelY = (m_vScrollBar.GetScrollPos () + iMouseOffsetY + g_dCompensationY) / m_dNewScale;
 
@@ -1630,12 +1631,13 @@ BOOL CELCVMatchToolDlg::OnMouseWheel (UINT nFlags, short zDelta, CPoint pt)
 		int iWidth = m_matSrc.cols;
 		int iHeight = m_matSrc.rows;
 
-		
+		//every time calculating a new scale, change the horizontal&vertical bars' range
 		m_hScrollBar.SetScrollRange (0, int (m_dNewScale * iWidth - m_dSrcScale * iWidth) - 1 + BAR_SIZE);
 		m_vScrollBar.SetScrollRange (0, int (m_dNewScale * iHeight - m_dSrcScale * iHeight) - 1 + BAR_SIZE);
 		int iBarPosX = int (dPixelX * m_dNewScale - iMouseOffsetX + 0.5);
 		m_hScrollBar.SetScrollPos (iBarPosX);
 		m_hScrollBar.ShowWindow (SW_SHOW);
+		//recorde the slight error, and compensate it next time
 		g_dCompensationX = -iBarPosX + (dPixelX * m_dNewScale - iMouseOffsetX);
 
 		int iBarPosY = int (dPixelY * m_dNewScale - iMouseOffsetY + 0.5);
@@ -1643,7 +1645,7 @@ BOOL CELCVMatchToolDlg::OnMouseWheel (UINT nFlags, short zDelta, CPoint pt)
 		m_vScrollBar.ShowWindow (SW_SHOW);
 		g_dCompensationY = -iBarPosY + (dPixelY * m_dNewScale - iMouseOffsetY);
 
-		//滑塊大小
+		//scroll bar size
 		SCROLLINFO infoH;
 		infoH.cbSize = sizeof (SCROLLINFO);
 		infoH.fMask = SIF_PAGE;
@@ -1655,7 +1657,7 @@ BOOL CELCVMatchToolDlg::OnMouseWheel (UINT nFlags, short zDelta, CPoint pt)
 		infoV.fMask = SIF_PAGE;
 		infoV.nPage = BAR_SIZE;
 		m_vScrollBar.SetScrollInfo (&infoV);
-		//滑塊大小
+		//scroll bar size
 
 	}
 	else
@@ -1665,6 +1667,7 @@ BOOL CELCVMatchToolDlg::OnMouseWheel (UINT nFlags, short zDelta, CPoint pt)
 		m_vScrollBar.SetScrollPos (0);
 		m_vScrollBar.ShowWindow (SW_HIDE);
 	}
+	//because scale is changed, refresh image
 	RefreshSrcView ();
 	return CDialogEx::OnMouseWheel (nFlags, zDelta, pt);
 }
