@@ -38,8 +38,8 @@ bin/
 obj/
 Debug/
 Release/
-Debug_4X/
-Release_4X/
+Debug_4.X/
+Release_4.X/
 *.opensdf
 *.tlog
 *.log

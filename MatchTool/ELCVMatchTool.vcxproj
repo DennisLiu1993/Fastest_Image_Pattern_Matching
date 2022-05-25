@@ -378,16 +378,16 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ELCVMatchTool.h" />
-    <ClInclude Include="ELCVMatchToolDlg.h" />
+    <ClInclude Include="MatchTool.h" />
+    <ClInclude Include="MatchToolDlg.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ELCVMatchTool.cpp" />
-    <ClCompile Include="ELCVMatchToolDlg.cpp" />
+    <ClCompile Include="MatchTool.cpp" />
+    <ClCompile Include="MatchToolDlg.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_4.X|Win32'">Create</PrecompiledHeader>

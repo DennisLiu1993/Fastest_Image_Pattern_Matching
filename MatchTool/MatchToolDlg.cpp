@@ -4,8 +4,8 @@
 
 #include "pch.h"
 #include "framework.h"
-#include "ELCVMatchTool.h"
-#include "ELCVMatchToolDlg.h"
+#include "MatchTool.h"
+#include "MatchToolDlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
