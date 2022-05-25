@@ -779,10 +779,7 @@ BOOL CELCVMatchToolDlg::Match ()
 	double dAngleStep = atan (2.0 / max (pTemplData->vecPyramid[iTopLayer].cols, pTemplData->vecPyramid[iTopLayer].rows)) * R2D;
 
 	vector<double> vecAngles;
-	if (m_dToleranceAngle < VISION_TOLERANCE)
-		vecAngles.push_back (0.0);
-	else
-	{
+	
 		if (m_bToleranceRange)
 		{
 			if (m_dTolerance1 >= m_dTolerance2 || m_dTolerance3 >= m_dTolerance4)
@@ -797,12 +794,16 @@ BOOL CELCVMatchToolDlg::Match ()
 		}
 		else
 		{
-			for (double dAngle = 0; dAngle < m_dToleranceAngle + dAngleStep; dAngle += dAngleStep)
-				vecAngles.push_back (dAngle);
-			for (double dAngle = -dAngleStep; dAngle > -m_dToleranceAngle - dAngleStep; dAngle -= dAngleStep)
-				vecAngles.push_back (dAngle);
+			if (m_dToleranceAngle < VISION_TOLERANCE)
+				vecAngles.push_back (0.0);
+			else
+			{
+				for (double dAngle = 0; dAngle < m_dToleranceAngle + dAngleStep; dAngle += dAngleStep)
+					vecAngles.push_back (dAngle);
+				for (double dAngle = -dAngleStep; dAngle > -m_dToleranceAngle - dAngleStep; dAngle -= dAngleStep)
+					vecAngles.push_back (dAngle);
+			}
 		}
-	}
 
 	int iTopSrcW = vecMatSrcPyr[iTopLayer].cols, iTopSrcH = vecMatSrcPyr[iTopLayer].rows;
 	Point2f ptCenter ((iTopSrcW - 1) / 2.0f, (iTopSrcH - 1) / 2.0f);
@@ -923,10 +924,10 @@ BOOL CELCVMatchToolDlg::Match ()
 				//搜尋角度
 				dAngleStep = atan (2.0 / max (pTemplData->vecPyramid[iLayer].cols, pTemplData->vecPyramid[iLayer].rows)) * R2D;//min改為max
 				vector<double> vecAngles;
-				double dAngleS = vecMatchParameter[i].dAngleStart, dAngleE = vecMatchParameter[i].dAngleEnd;
-				if (m_dToleranceAngle < VISION_TOLERANCE)
+				//double dAngleS = vecMatchParameter[i].dAngleStart, dAngleE = vecMatchParameter[i].dAngleEnd;
+				/*if (m_dToleranceAngle < VISION_TOLERANCE)
 					vecAngles.push_back (0.0);
-				else
+				else*/
 				{
 					double dMatchedAngle = vecMatchParameter[i].dMatchAngle;
 
