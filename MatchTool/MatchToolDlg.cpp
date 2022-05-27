@@ -1029,13 +1029,17 @@ BOOL CELCVMatchToolDlg::Match ()
 	}
 	FilterWithRotatedRect (&vecAllResult, CV_TM_CCOEFF_NORMED, m_dMaxOverlap);
 	//最後再次濾掉重疊
+
+	//根據分數排序
+	sort (vecAllResult.begin (), vecAllResult.end (), compareScoreBig2Small);
 	m_strExecureTime.Format (L"%s : %d ms", m_strLanExecutionTime, int (clock () - d1));
 	m_statusBar.SetPaneText (0, m_strExecureTime);
-	if (vecAllResult.size () == 0)
-		return FALSE;
+	
 	m_vecSingleTargetData.clear ();
 	m_listMsg.DeleteAllItems ();
 	iMatchSize = (int)vecAllResult.size ();
+	if (vecAllResult.size () == 0)
+		return FALSE;
 	int iW = pTemplData->vecPyramid[0].cols, iH = pTemplData->vecPyramid[0].rows;
 
 	for (int i = 0; i < iMatchSize; i++)
@@ -1074,7 +1078,7 @@ BOOL CELCVMatchToolDlg::Match ()
 		if (i + 1 == m_iMaxPos)
 			break;
 	}
-	sort (m_vecSingleTargetData.begin (), m_vecSingleTargetData.end (), compareMatchResultByPosX);
+	//sort (m_vecSingleTargetData.begin (), m_vecSingleTargetData.end (), compareMatchResultByPosX);
 	m_listMsg.DeleteAllItems ();
 
 	for (int i = 0 ; i < (int)m_vecSingleTargetData.size (); i++)
