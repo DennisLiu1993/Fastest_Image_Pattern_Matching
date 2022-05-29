@@ -15,7 +15,7 @@
 #define VISION_TOLERANCE 0.0000001
 #define D2R (CV_PI / 180.0)
 #define R2D (180.0 / CV_PI)
-#define MATCH_CANDIDATE_NUM 1
+#define MATCH_CANDIDATE_NUM 5
 
 #define SUBITEM_INDEX 0
 #define SUBITEM_SCORE 1
@@ -63,7 +63,7 @@ CELCVMatchToolDlg::CELCVMatchToolDlg(CWnd* pParent /*=nullptr*/)
 	, m_dMaxOverlap (0)
 	, m_dScore (0.8)
 	, m_dToleranceAngle (0)
-	, m_iMinReduceArea (64)
+	, m_iMinReduceArea (256)
 	, m_bDebugMode (FALSE)
 	, m_dTolerance1 (40)
 	, m_dTolerance2 (60)
@@ -779,38 +779,44 @@ BOOL CELCVMatchToolDlg::Match ()
 	double dAngleStep = atan (2.0 / max (pTemplData->vecPyramid[iTopLayer].cols, pTemplData->vecPyramid[iTopLayer].rows)) * R2D;
 
 	vector<double> vecAngles;
-	
-		if (m_bToleranceRange)
+
+	if (m_bToleranceRange)
+	{
+		if (m_dTolerance1 >= m_dTolerance2 || m_dTolerance3 >= m_dTolerance4)
 		{
-			if (m_dTolerance1 >= m_dTolerance2 || m_dTolerance3 >= m_dTolerance4)
-			{
-				AfxMessageBox (L"角度範圍設定異常，左值須小於右值");
-				return FALSE;
-			}
-			for (double dAngle = m_dTolerance1 ; dAngle < m_dTolerance2 + dAngleStep; dAngle += dAngleStep)
-				vecAngles.push_back (dAngle);
-			for (double dAngle = m_dTolerance3 ; dAngle < m_dTolerance4 + dAngleStep; dAngle += dAngleStep)
-				vecAngles.push_back (dAngle);
+			AfxMessageBox (L"角度範圍設定異常，左值須小於右值");
+			return FALSE;
 		}
+		for (double dAngle = m_dTolerance1; dAngle < m_dTolerance2 + dAngleStep; dAngle += dAngleStep)
+			vecAngles.push_back (dAngle);
+		for (double dAngle = m_dTolerance3; dAngle < m_dTolerance4 + dAngleStep; dAngle += dAngleStep)
+			vecAngles.push_back (dAngle);
+	}
+	else
+	{
+		if (m_dToleranceAngle < VISION_TOLERANCE)
+			vecAngles.push_back (0.0);
 		else
 		{
-			if (m_dToleranceAngle < VISION_TOLERANCE)
-				vecAngles.push_back (0.0);
-			else
-			{
-				for (double dAngle = 0; dAngle < m_dToleranceAngle + dAngleStep; dAngle += dAngleStep)
-					vecAngles.push_back (dAngle);
-				for (double dAngle = -dAngleStep; dAngle > -m_dToleranceAngle - dAngleStep; dAngle -= dAngleStep)
-					vecAngles.push_back (dAngle);
-			}
+			for (double dAngle = 0; dAngle < m_dToleranceAngle + dAngleStep; dAngle += dAngleStep)
+				vecAngles.push_back (dAngle);
+			for (double dAngle = -dAngleStep; dAngle > -m_dToleranceAngle - dAngleStep; dAngle -= dAngleStep)
+				vecAngles.push_back (dAngle);
 		}
+	}
 
 	int iTopSrcW = vecMatSrcPyr[iTopLayer].cols, iTopSrcH = vecMatSrcPyr[iTopLayer].rows;
 	Point2f ptCenter ((iTopSrcW - 1) / 2.0f, (iTopSrcH - 1) / 2.0f);
 
 	int iSize = (int)vecAngles.size ();
-	vector<s_MatchParameter> vecMatchParameter (iSize * (m_iMaxPos + MATCH_CANDIDATE_NUM));
+	//vector<s_MatchParameter> vecMatchParameter (iSize * (m_iMaxPos + MATCH_CANDIDATE_NUM));
+	vector<s_MatchParameter> vecMatchParameter;
+	//Caculate lowest score at every layer
+	vector<double> vecLayerScore (iTopLayer + 1, m_dScore);
+	for (int iLayer = 1; iLayer <= iTopLayer; iLayer++)
+		vecLayerScore[iLayer] = vecLayerScore[iLayer - 1] * 0.9;
 
+	
 	for (int i = 0; i < iSize; i++)
 	{
 		Mat matRotatedSrc, matR = getRotationMatrix2D (ptCenter, vecAngles[i], 1);
@@ -825,22 +831,28 @@ BOOL CELCVMatchToolDlg::Match ()
 		matR.at<double> (1, 2) += fTranslationY;
 		warpAffine (vecMatSrcPyr[iTopLayer], matRotatedSrc, matR, sizeBest);
 
-
-		MatchTemplate (matRotatedSrc, pTemplData, matResult, iTopLayer);
+		//
+		//MatchTemplate (matRotatedSrc, pTemplData, matResult, iTopLayer);
+		matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iTopLayer], matResult, CV_TM_CCOEFF_NORMED);
+		//wait for revising because similarities of this two function is not the same
 
 		minMaxLoc (matResult, 0, &dMaxVal, 0, &ptMaxLoc);
 
-		vecMatchParameter[i * (m_iMaxPos + MATCH_CANDIDATE_NUM)] = s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dMaxVal, vecAngles[i]);
+		//vecMatchParameter[i * (m_iMaxPos + MATCH_CANDIDATE_NUM)] = s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dMaxVal, vecAngles[i]);
+		vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dMaxVal, vecAngles[i]));
 
 		for (int j = 0; j < m_iMaxPos + MATCH_CANDIDATE_NUM - 1; j++)
 		{
 			ptMaxLoc = GetNextMaxLoc (matResult, ptMaxLoc, -1, pTemplData->vecPyramid[iTopLayer].cols, pTemplData->vecPyramid[iTopLayer].rows, dValue, m_dMaxOverlap);
-			vecMatchParameter[i * (m_iMaxPos + MATCH_CANDIDATE_NUM) + j + 1] = s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]);
+			//vecMatchParameter[i * (m_iMaxPos + MATCH_CANDIDATE_NUM) + j + 1] = s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]);
+			vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]));
+			if (dValue < vecLayerScore[iTopLayer])
+				break;
 		}
 	}
-	FilterWithScore (&vecMatchParameter, m_dScore-0.05*iTopLayer);
+	//FilterWithScore (&vecMatchParameter, m_dScore - 0.05*iTopLayer);
 
-	//紀錄旋轉矩形、ROI與角度
+	//record rotated rectangle、ROI and angle
 	int iMatchSize = (int)vecMatchParameter.size ();
 	int iDstW = pTemplData->vecPyramid[iTopLayer].cols, iDstH = pTemplData->vecPyramid[iTopLayer].rows;
 	if (m_bDebugMode)
@@ -866,12 +878,13 @@ BOOL CELCVMatchToolDlg::Match ()
 	//顯示第一層結果
 	if (m_bDebugMode)
 	{
-		Mat matShow;
+		int iDebugScale = 2;
 
-		cvtColor (vecMatSrcPyr[iTopLayer], matShow, CV_GRAY2BGR);
+		Mat matShow, matResize;
+		resize (vecMatSrcPyr[iTopLayer], matResize, vecMatSrcPyr[iTopLayer].size () * iDebugScale);
+		cvtColor (matResize, matShow, CV_GRAY2BGR);
 		iMatchSize = (int)vecMatchParameter.size ();
 		string str = format ("Toplayer, Candidate:%d", iMatchSize);
-
 		for (int i = 0; i < iMatchSize; i++)
 		{
 			Point2f ptLT, ptRT, ptRB, ptLB;
@@ -880,14 +893,14 @@ BOOL CELCVMatchToolDlg::Match ()
 			ptRT = Point2f (ptLT.x + iDstW * (float)cos (dRAngle), ptLT.y - iDstW * (float)sin (dRAngle));
 			ptLB = Point2f (ptLT.x + iDstH * (float)sin (dRAngle), ptLT.y + iDstH * (float)cos (dRAngle));
 			ptRB = Point2f (ptRT.x + iDstH * (float)sin (dRAngle), ptRT.y + iDstH * (float)cos (dRAngle));
-			line (matShow, ptLT, ptLB, Scalar (0, 255, 0));
-			line (matShow, ptLB, ptRB, Scalar (0, 255, 0));
-			line (matShow, ptRB, ptRT, Scalar (0, 255, 0));
-			line (matShow, ptRT, ptLT, Scalar (0, 255, 0));
-			circle (matShow, ptLT, 1, Scalar (0, 0, 255));
+			line (matShow, ptLT * iDebugScale, ptLB * iDebugScale, Scalar (0, 255, 0));
+			line (matShow, ptLB * iDebugScale, ptRB * iDebugScale, Scalar (0, 255, 0));
+			line (matShow, ptRB * iDebugScale, ptRT * iDebugScale, Scalar (0, 255, 0));
+			line (matShow, ptRT * iDebugScale, ptLT * iDebugScale, Scalar (0, 255, 0));
+			circle (matShow, ptLT * iDebugScale, 1, Scalar (0, 0, 255));
 
 			string strText = format ("%d", i);
-			putText (matShow, strText, ptLT, FONT_HERSHEY_PLAIN, 1, Scalar (0, 255, 0));
+			putText (matShow, strText, ptLT *iDebugScale, FONT_HERSHEY_PLAIN, 1, Scalar (0, 255, 0));
 			imshow (str, matShow);
 			
 		}
@@ -896,7 +909,7 @@ BOOL CELCVMatchToolDlg::Match ()
 	}
 
 	//顯示第一層結果
-
+	int a = 0;
 	//第一階段結束
 	BOOL bSubPixelEstimation = m_bSubPixel.GetCheck ();
 	int iStopLayer = 0;
@@ -925,14 +938,19 @@ BOOL CELCVMatchToolDlg::Match ()
 				dAngleStep = atan (2.0 / max (pTemplData->vecPyramid[iLayer].cols, pTemplData->vecPyramid[iLayer].rows)) * R2D;//min改為max
 				vector<double> vecAngles;
 				//double dAngleS = vecMatchParameter[i].dAngleStart, dAngleE = vecMatchParameter[i].dAngleEnd;
-				/*if (m_dToleranceAngle < VISION_TOLERANCE)
-					vecAngles.push_back (0.0);
-				else*/
+				double dMatchedAngle = vecMatchParameter[i].dMatchAngle;
+				if (m_bToleranceRange)
 				{
-					double dMatchedAngle = vecMatchParameter[i].dMatchAngle;
-
 					for (int i = -1; i <= 1; i++)
 						vecAngles.push_back (dMatchedAngle + dAngleStep * i);
+				}
+				else
+				{
+					if (m_dToleranceAngle < VISION_TOLERANCE)
+						vecAngles.push_back (0.0);
+					else
+						for (int i = -1; i <= 1; i++)
+							vecAngles.push_back (dMatchedAngle + dAngleStep * i);
 				}
 				Point2f ptSrcCenter ((vecMatSrcPyr[iLayer].cols - 1) / 2.0f, (vecMatSrcPyr[iLayer].rows - 1) / 2.0f);
 				iSize = (int)vecAngles.size ();
@@ -947,8 +965,8 @@ BOOL CELCVMatchToolDlg::Match ()
 					if (iLayer == 0)
 						int a = 0;
 					GetRotatedROI (vecMatSrcPyr[iLayer], pTemplData->vecPyramid[iLayer].size (), ptLT * 2, vecAngles[j], matRotatedSrc);
-					
-					MatchTemplate (matRotatedSrc, pTemplData, matResult, iLayer);
+					//MatchTemplate (matRotatedSrc, pTemplData, matResult, iLayer);
+					matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iLayer], matResult, CV_TM_CCOEFF_NORMED);
 					minMaxLoc (matResult, 0, &dMaxValue, 0, &ptMaxLoc);
 					vecNewMatchParameter[j] = s_MatchParameter (ptMaxLoc, dMaxValue, vecAngles[j]);
 					
@@ -969,9 +987,9 @@ BOOL CELCVMatchToolDlg::Match ()
 					//次像素估計
 				}
 				//sort (vecNewMatchParameter.begin (), vecNewMatchParameter.end (), compareScoreBig2Small);
-				if (vecNewMatchParameter[iMaxScoreIndex].dMatchScore < m_dScore - 0.05 * iLayer)
+				//if (vecNewMatchParameter[iMaxScoreIndex].dMatchScore < m_dScore - 0.05 * iLayer)
+				if (vecNewMatchParameter[iMaxScoreIndex].dMatchScore < vecLayerScore[iLayer])
 					break;
-
 				//次像素估計
 				if (bSubPixelEstimation 
 					&& iLayer == 0 
@@ -1008,6 +1026,7 @@ BOOL CELCVMatchToolDlg::Match ()
 					ptLT = pt;
 				}
 			}
+
 		}
 	}
 	FilterWithScore (&vecAllResult, m_dScore);
@@ -1300,6 +1319,11 @@ Size CELCVMatchToolDlg::GetBestRotationSize (Size sizeSrc, Size sizeDst, double 
 	float fTopY = max (max (ptLT_R.y, ptLB_R.y), max (ptRB_R.y, ptRT_R.y));
 	float fRightestX = max (max (ptLT_R.x, ptLB_R.x), max (ptRB_R.x, ptRT_R.x));
 
+	if (dRAngle > 360)
+		dRAngle -= 360;
+	else if (dRAngle < 0)
+		dRAngle += 360;
+
 	if (fabs (fabs (dRAngle) - 90) < VISION_TOLERANCE || fabs (fabs (dRAngle) - 270) < VISION_TOLERANCE)
 	{
 		return Size (sizeSrc.height, sizeSrc.width);
@@ -1308,10 +1332,7 @@ Size CELCVMatchToolDlg::GetBestRotationSize (Size sizeSrc, Size sizeDst, double 
 	{
 		return sizeSrc;
 	}
-	if (dRAngle > 360)
-		dRAngle -= 360;
-	else if (dRAngle < 0)
-		dRAngle += 360;
+	
 	double dAngle = dRAngle;
 
 	if (dAngle > 0 && dAngle < 90)
@@ -1463,7 +1484,7 @@ Point CELCVMatchToolDlg::GetNextMaxLoc (Mat & matResult, Point ptMaxLoc, double 
 
 	int iEndY = ptMaxLoc.y + iTemplateH * (1 - dMaxOverlap);
 	//塗黑
-	rectangle (matResult, Rect (iStartX, iStartY, 2 * iTemplateW * (1-dMaxOverlap), 2 * iTemplateH * (1-dMaxOverlap)), Scalar (dMinValue), CV_FILLED);
+	rectangle (matResult, Rect (iStartX, iStartY, 2 * iTemplateW * (1- dMaxOverlap), 2 * iTemplateH * (1- dMaxOverlap)), Scalar (dMinValue), CV_FILLED);
 	//得到下一個最大值
 	Point ptNewMaxLoc;
 	minMaxLoc (matResult, 0, &dMaxValue, 0, &ptNewMaxLoc);
@@ -1952,8 +1973,8 @@ void MouseCall (int event, int x, int y, int flag, void* pUserData)
 
 	if (event == CV_EVENT_MOUSEMOVE)
 	{
-		int iX = int (x / pDlg->m_dNewScale);
-		int iY = int (y / pDlg->m_dNewScale);
+		int iX = int ((x + pDlg->m_hScrollBar.GetScrollPos ()) / pDlg->m_dNewScale);
+		int iY = int ((y + pDlg->m_vScrollBar.GetScrollPos ()) / pDlg->m_dNewScale);
 		CString strPos;
 		strPos.Format (L"%s : %d, %d", pDlg->m_strLanPixelPos, iX, iY);
 		pDlg->m_statusBar.SetPaneText (3, strPos);
