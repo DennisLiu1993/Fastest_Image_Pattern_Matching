@@ -1,5 +1,5 @@
 ﻿
-// ELCVMatchToolDlg.cpp: 實作檔案
+// MatchToolDlg.cpp: 實作檔案
 //
 
 #include "pch.h"
@@ -28,7 +28,7 @@
 #define SCALE_RATIO 1.25
 
 #define FONT_SIZE 115
-// CELCVMatchToolDlg 對話方塊
+// CMatchToolDlg 對話方塊
 
 bool compareScoreBig2Small (const s_MatchParameter& lhs, const s_MatchParameter& rhs) { return  lhs.dMatchScore > rhs.dMatchScore; }
 bool comparePtWithAngle (const pair<Point2f, double> lhs, const pair<Point2f, double> rhs) { return lhs.second < rhs.second; }
@@ -57,8 +57,8 @@ const Scalar colorWhite (255, 255, 255);
 const Scalar colorPurple (214, 112, 218);
 const Scalar colorGoldenrod (15, 185, 255);
 
-CELCVMatchToolDlg::CELCVMatchToolDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_ELCVMATCHTOOL_DIALOG, pParent)
+CMatchToolDlg::CMatchToolDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD_MATCHTOOL_DIALOG, pParent)
 	, m_iMaxPos (5)
 	, m_dMaxOverlap (0)
 	, m_dScore (0.8)
@@ -80,7 +80,7 @@ CELCVMatchToolDlg::CELCVMatchToolDlg(CWnd* pParent /*=nullptr*/)
 	m_bToleranceRange = FALSE;
 }
 
-void CELCVMatchToolDlg::DoDataExchange(CDataExchange* pDX)
+void CMatchToolDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange (pDX);
 	DDX_Text (pDX, IDC_EDIT_MAX_POS, m_iMaxPos);
@@ -108,30 +108,30 @@ void CELCVMatchToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control (pDX, IDC_COMBO_LAN, m_cbLanSelect);
 }
 
-BEGIN_MESSAGE_MAP(CELCVMatchToolDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CMatchToolDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_COMMAND (ID_LOAD_SRC, &CELCVMatchToolDlg::OnLoadSrc)
-	ON_COMMAND (ID_LOAD_DST, &CELCVMatchToolDlg::OnLoadDst)
+	ON_COMMAND (ID_LOAD_SRC, &CMatchToolDlg::OnLoadSrc)
+	ON_COMMAND (ID_LOAD_DST, &CMatchToolDlg::OnLoadDst)
 	ON_WM_DROPFILES ()
 	ON_WM_MOUSEMOVE ()
-	ON_BN_CLICKED (IDC_BUTTON_EXECUTE, &CELCVMatchToolDlg::OnBnClickedButtonExecute)
+	ON_BN_CLICKED (IDC_BUTTON_EXECUTE, &CMatchToolDlg::OnBnClickedButtonExecute)
 	ON_WM_MOUSEWHEEL ()
 	ON_WM_HSCROLL ()
 	ON_WM_VSCROLL ()
 	ON_WM_SIZE ()
 	ON_WM_CTLCOLOR ()
-	ON_NOTIFY (LVN_KEYDOWN, IDC_LIST_MSG, &CELCVMatchToolDlg::OnLvnKeydownListMsg)
+	ON_NOTIFY (LVN_KEYDOWN, IDC_LIST_MSG, &CMatchToolDlg::OnLvnKeydownListMsg)
 	ON_WM_SETCURSOR ()
 	ON_WM_LBUTTONDOWN ()
-	ON_BN_CLICKED (IDC_BUTTON_CHANGE_TOLERANCE_MODE, &CELCVMatchToolDlg::OnBnClickedButtonChangeToleranceMode)
-	ON_CBN_SELCHANGE (IDC_COMBO_LAN, &CELCVMatchToolDlg::OnCbnSelchangeComboLan)
+	ON_BN_CLICKED (IDC_BUTTON_CHANGE_TOLERANCE_MODE, &CMatchToolDlg::OnBnClickedButtonChangeToleranceMode)
+	ON_CBN_SELCHANGE (IDC_COMBO_LAN, &CMatchToolDlg::OnCbnSelchangeComboLan)
 END_MESSAGE_MAP()
 
 
-// CELCVMatchToolDlg 訊息處理常式
+// CMatchToolDlg 訊息處理常式
 
-BOOL CELCVMatchToolDlg::OnInitDialog()
+BOOL CMatchToolDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 	// 設定此對話方塊的圖示。當應用程式的主視窗不是對話方塊時，
@@ -258,14 +258,14 @@ BOOL CELCVMatchToolDlg::OnInitDialog()
 
 // 當使用者拖曳最小化視窗時，
 // 系統呼叫這個功能取得游標顯示。
-HCURSOR CELCVMatchToolDlg::OnQueryDragIcon()
+HCURSOR CMatchToolDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
 
 
-void CELCVMatchToolDlg::OnLoadSrc ()
+void CMatchToolDlg::OnLoadSrc ()
 {
 	CString szFilter = L"|Bitmap Files(*.bmp)|*.bmpJPG Files (*.jpg)|*.jpg|All Files(*.*)|*.*||";
 
@@ -285,7 +285,7 @@ void CELCVMatchToolDlg::OnLoadSrc ()
 		LoadSrc ();
 	}
 }
-void CELCVMatchToolDlg::RefreshSrcView ()
+void CMatchToolDlg::RefreshSrcView ()
 {
 	HWND hWnd = (HWND)cvGetWindowHandle ("SrcView");
 	if (!hWnd || m_matSrc.empty ())
@@ -371,7 +371,7 @@ void CELCVMatchToolDlg::RefreshSrcView ()
 
 
 }
-void CELCVMatchToolDlg::RefreshDstView ()
+void CMatchToolDlg::RefreshDstView ()
 {
 	HWND hWnd = (HWND)cvGetWindowHandle ("DstView");
 	if (!hWnd || m_matDst.empty ())
@@ -396,7 +396,7 @@ void CELCVMatchToolDlg::RefreshDstView ()
 	LearnPattern ();
 	pWnd->ReleaseDC (dc);
 }
-void CELCVMatchToolDlg::DrawDashLine (Mat& matDraw, Point ptStart, Point ptEnd, Scalar color1, Scalar color2)
+void CMatchToolDlg::DrawDashLine (Mat& matDraw, Point ptStart, Point ptEnd, Scalar color1, Scalar color2)
 {
 	LineIterator itLine (matDraw, ptStart, ptEnd, 8, 0);
 	int iCount = itLine.count;
@@ -420,7 +420,7 @@ void CELCVMatchToolDlg::DrawDashLine (Mat& matDraw, Point ptStart, Point ptEnd, 
 
 	}
 }
-void CELCVMatchToolDlg::DrawMarkCross (Mat& matDraw, int iX, int iY, int iLength, Scalar color, int iThickness)
+void CMatchToolDlg::DrawMarkCross (Mat& matDraw, int iX, int iY, int iLength, Scalar color, int iThickness)
 {
 	if (matDraw.empty ())
 		return;
@@ -428,7 +428,7 @@ void CELCVMatchToolDlg::DrawMarkCross (Mat& matDraw, int iX, int iY, int iLength
 	line (matDraw, ptC - Point (iLength, 0), ptC + Point (iLength, 0), color, iThickness);
 	line (matDraw, ptC - Point (0, iLength), ptC + Point (0, iLength), color, iThickness);
 }
-void CELCVMatchToolDlg::LearnPattern ()
+void CMatchToolDlg::LearnPattern ()
 {
 	UpdateData (1);;
 	m_TemplData.clear ();
@@ -468,7 +468,7 @@ void CELCVMatchToolDlg::LearnPattern ()
 	templData->bIsPatternLearned = TRUE;
 }
 
-int CELCVMatchToolDlg::GetTopLayer (Mat* matTempl, int iMinDstLength)
+int CMatchToolDlg::GetTopLayer (Mat* matTempl, int iMinDstLength)
 {
 	int iTopLayer = 0;
 	int iMinReduceArea = iMinDstLength * iMinDstLength;
@@ -481,7 +481,7 @@ int CELCVMatchToolDlg::GetTopLayer (Mat* matTempl, int iMinDstLength)
 	return iTopLayer;
 }
 
-void CELCVMatchToolDlg::OnLoadDst ()
+void CMatchToolDlg::OnLoadDst ()
 {
 	CString szFilter = L"|Bitmap Files(*.bmp)|*.bmpJPG Files (*.jpg)|*.jpg|All Files(*.*)|*.*||";
 
@@ -503,7 +503,7 @@ void CELCVMatchToolDlg::OnLoadDst ()
 }
 
 
-void CELCVMatchToolDlg::OnDropFiles (HDROP hDropInfo)
+void CMatchToolDlg::OnDropFiles (HDROP hDropInfo)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
 	USES_CONVERSION;
@@ -555,7 +555,7 @@ void CELCVMatchToolDlg::OnDropFiles (HDROP hDropInfo)
 }
 
 
-void CELCVMatchToolDlg::OnMouseMove (UINT nFlags, CPoint point)
+void CMatchToolDlg::OnMouseMove (UINT nFlags, CPoint point)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
 	POINT pointCursor;
@@ -566,7 +566,7 @@ void CELCVMatchToolDlg::OnMouseMove (UINT nFlags, CPoint point)
 	CDialogEx::OnMouseMove (nFlags, point);
 }
 
-void CELCVMatchToolDlg::PumpMessages ()
+void CMatchToolDlg::PumpMessages ()
 {
 	MSG msg;
 
@@ -597,7 +597,7 @@ bool GetExeDir (_TCHAR* psz)
 
 	return true;
 }
-void CELCVMatchToolDlg::ChangeLanguage (CString strLan)
+void CMatchToolDlg::ChangeLanguage (CString strLan)
 {
 	if (strLan.CompareNoCase (L"Chinese (Tranditional)") == 0)
 		strLan = L"Chinese_Traditional";
@@ -689,7 +689,7 @@ void CELCVMatchToolDlg::ChangeLanguage (CString strLan)
 bool comparePosWithY (const pair<Point2d, char>& lhs, const pair<Point2d, char>& rhs) { return lhs.first.y < rhs.first.y; }
 bool comparePosWithX (const pair<Point2d, char>& lhs, const pair<Point2d, char>& rhs){return lhs.first.x < rhs.first.x;}
 //OCR
-void CELCVMatchToolDlg::OnBnClickedButtonExecute ()
+void CMatchToolDlg::OnBnClickedButtonExecute ()
 {
 	Match ();
 	return;
@@ -747,7 +747,7 @@ void CELCVMatchToolDlg::OnBnClickedButtonExecute ()
 	AfxMessageBox (strRet);
 	//DDD
 }
-BOOL CELCVMatchToolDlg::Match ()
+BOOL CMatchToolDlg::Match ()
 {
 	if (m_matSrc.empty () || m_matDst.empty ())
 		return FALSE;
@@ -1128,7 +1128,7 @@ BOOL CELCVMatchToolDlg::Match ()
 
 	return (int)m_vecSingleTargetData.size ();
 }
-BOOL CELCVMatchToolDlg::SubPixEsimation (vector<s_MatchParameter>* vec, double* dNewX, double* dNewY, double* dNewAngle, double dAngleStep, int iMaxScoreIndex)
+BOOL CMatchToolDlg::SubPixEsimation (vector<s_MatchParameter>* vec, double* dNewX, double* dNewY, double* dNewAngle, double dAngleStep, int iMaxScoreIndex)
 {
 	//Az=S, (A.T)Az=(A.T)s, z = ((A.T)A).inv (A.T)s
 
@@ -1202,7 +1202,7 @@ BOOL CELCVMatchToolDlg::SubPixEsimation (vector<s_MatchParameter>* vec, double* 
 	return TRUE;
 }
 
-void CELCVMatchToolDlg::OutputRoi (s_SingleTargetMatch sstm)
+void CMatchToolDlg::OutputRoi (s_SingleTargetMatch sstm)
 {
 	if (!m_ckOutputROI.GetCheck ())
 		return;
@@ -1216,12 +1216,12 @@ void CELCVMatchToolDlg::OutputRoi (s_SingleTargetMatch sstm)
 		break;
 	}
 }
-void CELCVMatchToolDlg::MatchTemplate (cv::Mat& matSrc, s_TemplData* pTemplData, cv::Mat& matResult, int iLayer)
+void CMatchToolDlg::MatchTemplate (cv::Mat& matSrc, s_TemplData* pTemplData, cv::Mat& matResult, int iLayer)
 {
 	matchTemplate (matSrc, pTemplData->vecPyramid[iLayer], matResult, CV_TM_CCORR);
 	CCOEFF_Denominator (matSrc, pTemplData, matResult, iLayer);
 }
-void CELCVMatchToolDlg::GetRotatedROI (Mat& matSrc, Size size, Point2f ptLT, double dAngle, Mat& matROI)
+void CMatchToolDlg::GetRotatedROI (Mat& matSrc, Size size, Point2f ptLT, double dAngle, Mat& matROI)
 {
 	double dAngle_radian = dAngle * D2R;
 	Point2f ptC ((matSrc.cols - 1) / 2.0f, (matSrc.rows - 1) / 2.0f);
@@ -1238,7 +1238,7 @@ void CELCVMatchToolDlg::GetRotatedROI (Mat& matSrc, Size size, Point2f ptLT, dou
 	//Debug
 	warpAffine (matSrc, matROI, rMat, sizePadding);
 }
-void CELCVMatchToolDlg::CCOEFF_Denominator (cv::Mat& matSrc, s_TemplData* pTemplData, cv::Mat& matResult, int iLayer)
+void CMatchToolDlg::CCOEFF_Denominator (cv::Mat& matSrc, s_TemplData* pTemplData, cv::Mat& matResult, int iLayer)
 {
 	if (pTemplData->vecResultEqual1[iLayer])
 	{
@@ -1306,7 +1306,7 @@ void CELCVMatchToolDlg::CCOEFF_Denominator (cv::Mat& matSrc, s_TemplData* pTempl
 		}
 	}
 }
-Size CELCVMatchToolDlg::GetBestRotationSize (Size sizeSrc, Size sizeDst, double dRAngle)
+Size CMatchToolDlg::GetBestRotationSize (Size sizeSrc, Size sizeDst, double dRAngle)
 {
 	double dRAngle_radian = dRAngle * D2R;
 	Point ptLT (0, 0), ptLB (0, sizeSrc.height - 1), ptRB (sizeSrc.width - 1, sizeSrc.height - 1), ptRT (sizeSrc.width - 1, 0);
@@ -1364,7 +1364,7 @@ Size CELCVMatchToolDlg::GetBestRotationSize (Size sizeSrc, Size sizeDst, double 
 
 	return Size (iHalfWidth * 2, iHalfHeight * 2);
 }
-Point2f CELCVMatchToolDlg::ptRotatePt2f (Point2f ptInput, Point2f ptOrg, double dAngle)
+Point2f CMatchToolDlg::ptRotatePt2f (Point2f ptInput, Point2f ptOrg, double dAngle)
 {
 	double dWidth = ptOrg.x * 2;
 	double dHeight = ptOrg.y * 2;
@@ -1376,7 +1376,7 @@ Point2f CELCVMatchToolDlg::ptRotatePt2f (Point2f ptInput, Point2f ptOrg, double 
 	dY = -dY + dHeight;
 	return Point2f ((float)dX, (float)dY);
 }
-void CELCVMatchToolDlg::FilterWithScore (vector<s_MatchParameter>* vec, double dScore)
+void CMatchToolDlg::FilterWithScore (vector<s_MatchParameter>* vec, double dScore)
 {
 	sort (vec->begin (), vec->end (), compareScoreBig2Small);
 	int iSize = vec->size (), iIndexDelete = iSize + 1;
@@ -1402,7 +1402,7 @@ void CELCVMatchToolDlg::FilterWithScore (vector<s_MatchParameter>* vec, double d
 			++it;
 	}
 }
-void CELCVMatchToolDlg::FilterWithRotatedRect (vector<s_MatchParameter>* vec, int iMethod, double dMaxOverLap)
+void CMatchToolDlg::FilterWithRotatedRect (vector<s_MatchParameter>* vec, int iMethod, double dMaxOverLap)
 {
 	int iMatchSize = (int)vec->size ();
 	RotatedRect rect1, rect2;
@@ -1462,7 +1462,7 @@ void CELCVMatchToolDlg::FilterWithRotatedRect (vector<s_MatchParameter>* vec, in
 			++it;
 	}
 }
-Point CELCVMatchToolDlg::GetNextMaxLoc (Mat & matResult, Point ptMaxLoc, double dMinValue, int iTemplateW, int iTemplateH, double& dMaxValue, double dMaxOverlap)
+Point CMatchToolDlg::GetNextMaxLoc (Mat & matResult, Point ptMaxLoc, double dMinValue, int iTemplateW, int iTemplateH, double& dMaxValue, double dMaxOverlap)
 {
 	//比對到的區域完全不重疊 : +-一個樣板寬高
 	//int iStartX = ptMaxLoc.x - iTemplateW;
@@ -1490,7 +1490,7 @@ Point CELCVMatchToolDlg::GetNextMaxLoc (Mat & matResult, Point ptMaxLoc, double 
 	minMaxLoc (matResult, 0, &dMaxValue, 0, &ptNewMaxLoc);
 	return ptNewMaxLoc;
 }
-void CELCVMatchToolDlg::SortPtWithCenter (vector<Point2f>& vecSort)
+void CMatchToolDlg::SortPtWithCenter (vector<Point2f>& vecSort)
 {
 	int iSize = (int)vecSort.size ();
 	Point2f ptCenter;
@@ -1529,7 +1529,7 @@ void CELCVMatchToolDlg::SortPtWithCenter (vector<Point2f>& vecSort)
 	for (int i = 0; i < iSize; i++)
 		vecSort[i] = vecPtAngle[i].first;
 }
-LRESULT CELCVMatchToolDlg::OnShowMSG (WPARAM wMSGPointer, LPARAM lIsShowTime)
+LRESULT CMatchToolDlg::OnShowMSG (WPARAM wMSGPointer, LPARAM lIsShowTime)
 {
 	CString* pMSG = (CString*)wMSGPointer;
 	CString strNum;
@@ -1576,7 +1576,7 @@ LRESULT CELCVMatchToolDlg::OnShowMSG (WPARAM wMSGPointer, LPARAM lIsShowTime)
 	return 0;
 }
 
-void CELCVMatchToolDlg::LoadSrc ()
+void CMatchToolDlg::LoadSrc ()
 {
 	CRect rectSrc;
 	::GetWindowRect (GetDlgItem (IDC_STATIC_SRC_VIEW)->m_hWnd, rectSrc);
@@ -1600,7 +1600,7 @@ void CELCVMatchToolDlg::LoadSrc ()
 	
 }
 
-void CELCVMatchToolDlg::LoadDst ()
+void CMatchToolDlg::LoadDst ()
 {
 	CRect rectDst;
 	::GetWindowRect (GetDlgItem (IDC_STATIC_DST_VIEW)->m_hWnd, rectDst);
@@ -1615,7 +1615,7 @@ void CELCVMatchToolDlg::LoadDst ()
 double g_dCompensationX = 0;//補償ScrollBar取整數造成的誤差
 double g_dCompensationY = 0;
 #define BAR_SIZE 100
-BOOL CELCVMatchToolDlg::OnMouseWheel (UINT nFlags, short zDelta, CPoint pt)
+BOOL CMatchToolDlg::OnMouseWheel (UINT nFlags, short zDelta, CPoint pt)
 {
 	POINT pointCursor;
 	GetCursorPos (&pointCursor);
@@ -1699,7 +1699,7 @@ BOOL CELCVMatchToolDlg::OnMouseWheel (UINT nFlags, short zDelta, CPoint pt)
 }
 
 
-void CELCVMatchToolDlg::OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+void CMatchToolDlg::OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
 	if (pScrollBar == (CScrollBar*)GetDlgItem (IDC_SCROLLBAR_H) && !m_matSrc.empty ())
@@ -1753,7 +1753,7 @@ void CELCVMatchToolDlg::OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollB
 }
 
 
-void CELCVMatchToolDlg::OnVScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+void CMatchToolDlg::OnVScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
 	if (pScrollBar == (CScrollBar*)GetDlgItem (IDC_SCROLLBAR_V) && !m_matSrc.empty ())
@@ -1806,7 +1806,7 @@ void CELCVMatchToolDlg::OnVScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollB
 }
 
 
-void CELCVMatchToolDlg::OnSize (UINT nType, int cx, int cy)
+void CMatchToolDlg::OnSize (UINT nType, int cx, int cy)
 {
 	CDialogEx::OnSize (nType, cx, cy);
 
@@ -1875,7 +1875,7 @@ void CELCVMatchToolDlg::OnSize (UINT nType, int cx, int cy)
 
 
 
-HBRUSH CELCVMatchToolDlg::OnCtlColor (CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+HBRUSH CMatchToolDlg::OnCtlColor (CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 {
 	HBRUSH hbr = CDialogEx::OnCtlColor (pDC, pWnd, nCtlColor);
 
@@ -1889,7 +1889,7 @@ HBRUSH CELCVMatchToolDlg::OnCtlColor (CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 }
 
 
-void CELCVMatchToolDlg::OnLvnKeydownListMsg (NMHDR *pNMHDR, LRESULT *pResult)
+void CMatchToolDlg::OnLvnKeydownListMsg (NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLVKEYDOWN pLVKeyDow = reinterpret_cast<LPNMLVKEYDOWN>(pNMHDR);
 	// TODO: 在此加入控制項告知處理常式程式碼
@@ -1924,7 +1924,7 @@ void CELCVMatchToolDlg::OnLvnKeydownListMsg (NMHDR *pNMHDR, LRESULT *pResult)
 	}
 	*pResult = 0;
 }
-void CELCVMatchToolDlg::OnPaint ()
+void CMatchToolDlg::OnPaint ()
 {
 	if (IsIconic())
 	{
@@ -1969,7 +1969,7 @@ void CELCVMatchToolDlg::OnPaint ()
 }
 void MouseCall (int event, int x, int y, int flag, void* pUserData)
 {
-	CELCVMatchToolDlg* pDlg = (CELCVMatchToolDlg*)pUserData;
+	CMatchToolDlg* pDlg = (CMatchToolDlg*)pUserData;
 
 	if (event == CV_EVENT_MOUSEMOVE)
 	{
@@ -1991,7 +1991,7 @@ void MouseCall (int event, int x, int y, int flag, void* pUserData)
 }
 
 
-void CELCVMatchToolDlg::OnBnClickedButtonChangeToleranceMode ()
+void CMatchToolDlg::OnBnClickedButtonChangeToleranceMode ()
 {
 	m_bToleranceRange = !m_bToleranceRange;
 
@@ -2020,7 +2020,7 @@ void CELCVMatchToolDlg::OnBnClickedButtonChangeToleranceMode ()
 
 
 
-void CELCVMatchToolDlg::OnCbnSelchangeComboLan ()
+void CMatchToolDlg::OnCbnSelchangeComboLan ()
 {
 	int iSel = m_cbLanSelect.GetCurSel ();
 	CString strLan;

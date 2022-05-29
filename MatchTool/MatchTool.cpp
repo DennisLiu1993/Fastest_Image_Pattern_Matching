@@ -72,7 +72,7 @@ BOOL CELCVMatchToolApp::InitInstance()
 	SetRegistryKey(_T("本機 AppWizard 所產生的應用程式"));
 
 
-	CELCVMatchToolDlg dlg;
+	CMatchToolDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

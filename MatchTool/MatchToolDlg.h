@@ -1,5 +1,5 @@
 ﻿
-// ELCVMatchToolDlg.h: 標頭檔
+// MatchToolDlg.h: 標頭檔
 //
 #include <opencv2/opencv.hpp>
 #ifdef OPENCV_4X
@@ -85,16 +85,16 @@ struct s_SingleTargetMatch
 	double dMatchedAngle;
 	double dMatchScore;
 };
-// CELCVMatchToolDlg 對話方塊
-class CELCVMatchToolDlg : public CDialogEx
+// CMatchToolDlg 對話方塊
+class CMatchToolDlg : public CDialogEx
 {
 // 建構
 public:
-	CELCVMatchToolDlg(CWnd* pParent = nullptr);	// 標準建構函式
+	CMatchToolDlg(CWnd* pParent = nullptr);	// 標準建構函式
 
 // 對話方塊資料
 #ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_ELCVMATCHTOOL_DIALOG };
+	enum { IDD = IDD_MATCHTOOL_DIALOG };
 #endif
 
 	protected:
