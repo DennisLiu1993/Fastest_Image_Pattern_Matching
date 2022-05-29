@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1585
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ELCVMatchTool", "ELCVMatchTool.vcxproj", "{EF3F0D87-D9D4-4971-A005-1899D08ED33C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MatchTool", "MatchTool.vcxproj", "{EF3F0D87-D9D4-4971-A005-1899D08ED33C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +38,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {CA6EDD90-8589-4EBD-A540-685E5D3082FF}
+		SolutionGuid = {017031B9-BC39-41B0-84C0-89A2957AA6AE}
 	EndGlobalSection
 EndGlobal

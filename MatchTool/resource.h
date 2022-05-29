@@ -1,8 +1,9 @@
 ﻿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by ELCVMatchTool.rc
+// Used by MatchTool.rc
 //
 #define IDD_ELCVMATCHTOOL_DIALOG        102
+#define IDD_MATCHTOOL_DIALOG            102
 #define IDR_MAINFRAME                   128
 #define IDR_MENU_FILE                   130
 #define IDS_STRING_EXCUTE_TIME          131

@@ -400,13 +400,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ELCVMatchTool.rc" />
+    <ResourceCompile Include="MatchTool.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\ELCVMatchTool.rc2" />
+    <None Include="res\MatchTool.rc2" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\ELCVMatchTool.ico" />
+    <Image Include="res\MatchTool.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

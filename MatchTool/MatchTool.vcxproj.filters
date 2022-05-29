@@ -46,17 +46,20 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ELCVMatchTool.rc">
+    <ResourceCompile Include="MatchTool.rc">
       <Filter>資源檔</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\ELCVMatchTool.rc2">
+    <None Include="res\MatchTool.rc2">
       <Filter>資源檔</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\ELCVMatchTool.ico">
+      <Filter>資源檔</Filter>
+    </Image>
+    <Image Include="res\MatchTool.ico">
       <Filter>資源檔</Filter>
     </Image>
   </ItemGroup>
