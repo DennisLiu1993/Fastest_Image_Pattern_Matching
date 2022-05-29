@@ -65,7 +65,7 @@ test0 - with user interface
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Image/UIwithResult.jpg)
 
-test1 (739ms, TargetNum=5, Overlap=0.6, Score=0.5, Tolerance Angle=180)
+test1 (252ms, TargetNum=4, Overlap=0.5, Score=0.6, Tolerance Angle=180)
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result8.jpg)
 
