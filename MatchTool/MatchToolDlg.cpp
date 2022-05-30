@@ -831,10 +831,8 @@ BOOL CMatchToolDlg::Match ()
 		matR.at<double> (1, 2) += fTranslationY;
 		warpAffine (vecMatSrcPyr[iTopLayer], matRotatedSrc, matR, sizeBest);
 
-		//
-		//MatchTemplate (matRotatedSrc, pTemplData, matResult, iTopLayer);
-		matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iTopLayer], matResult, CV_TM_CCOEFF_NORMED);
-		//wait for revising because similarities of this two function is not the same
+		MatchTemplate (matRotatedSrc, pTemplData, matResult, iTopLayer);
+		//matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iTopLayer], matResult, CV_TM_CCOEFF_NORMED);
 
 		minMaxLoc (matResult, 0, &dMaxVal, 0, &ptMaxLoc);
 
@@ -965,8 +963,8 @@ BOOL CMatchToolDlg::Match ()
 					if (iLayer == 0)
 						int a = 0;
 					GetRotatedROI (vecMatSrcPyr[iLayer], pTemplData->vecPyramid[iLayer].size (), ptLT * 2, vecAngles[j], matRotatedSrc);
-					//MatchTemplate (matRotatedSrc, pTemplData, matResult, iLayer);
-					matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iLayer], matResult, CV_TM_CCOEFF_NORMED);
+					MatchTemplate (matRotatedSrc, pTemplData, matResult, iLayer);
+					//matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iLayer], matResult, CV_TM_CCOEFF_NORMED);
 					minMaxLoc (matResult, 0, &dMaxValue, 0, &ptMaxLoc);
 					vecNewMatchParameter[j] = s_MatchParameter (ptMaxLoc, dMaxValue, vecAngles[j]);
 					
@@ -1248,7 +1246,7 @@ void CMatchToolDlg::CCOEFF_Denominator (cv::Mat& matSrc, s_TemplData* pTemplData
 	double *q0 = 0, *q1 = 0, *q2 = 0, *q3 = 0;
 
 	Mat sum, sqsum;
-	integral (matSrc, sum, sqsum, CV_32F, CV_64F);
+	integral (matSrc, sum, sqsum, CV_64F);
 
 	double d2 = clock ();
 
@@ -1257,12 +1255,12 @@ void CMatchToolDlg::CCOEFF_Denominator (cv::Mat& matSrc, s_TemplData* pTemplData
 	q2 = (double*)(sqsum.data + pTemplData->vecPyramid[iLayer].rows * sqsum.step);
 	q3 = q2 + pTemplData->vecPyramid[iLayer].cols;
 
-	float* p0 = (float*)sum.data;
-	float* p1 = p0 + pTemplData->vecPyramid[iLayer].cols;
-	float* p2 = (float*)(sum.data + pTemplData->vecPyramid[iLayer].rows*sum.step);
-	float* p3 = p2 + pTemplData->vecPyramid[iLayer].cols;
+	double* p0 = (double*)sum.data;
+	double* p1 = p0 + pTemplData->vecPyramid[iLayer].cols;
+	double* p2 = (double*)(sum.data + pTemplData->vecPyramid[iLayer].rows*sum.step);
+	double* p3 = p2 + pTemplData->vecPyramid[iLayer].cols;
 
-	int sumstep = sum.data ? (int)(sum.step / sizeof (float)) : 0;
+	int sumstep = sum.data ? (int)(sum.step / sizeof (double)) : 0;
 	int sqstep = sqsum.data ? (int)(sqsum.step / sizeof (double)) : 0;
 
 	//
@@ -1280,6 +1278,8 @@ void CMatchToolDlg::CCOEFF_Denominator (cv::Mat& matSrc, s_TemplData* pTemplData
 
 		for (j = 0; j < matResult.cols; j += 1, idx += 1, idx2 += 1)
 		{
+			if (i == 172 && j == 623)
+				int a = 0;
 			double num = rrow[j], t;
 			double wndMean2 = 0, wndSum2 = 0;
 
@@ -1293,7 +1293,13 @@ void CMatchToolDlg::CCOEFF_Denominator (cv::Mat& matSrc, s_TemplData* pTemplData
 			wndSum2 += t;
 
 
-			t = std::sqrt (MAX (wndSum2 - wndMean2, 0)) * dTemplNorm;
+			//t = std::sqrt (MAX (wndSum2 - wndMean2, 0)) * dTemplNorm;
+
+			double diff2 = MAX (wndSum2 - wndMean2, 0);
+			if (diff2 <= std::min (0.5, 10 * FLT_EPSILON * wndSum2))
+				t = 0; // avoid rounding errors
+			else
+				t = std::sqrt (diff2)*dTemplNorm;
 
 			if (fabs (num) < t)
 				num /= t;
