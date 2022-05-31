@@ -19,6 +19,7 @@ struct s_TemplData
 	vector<double> vecInvArea;
 	vector<BOOL> vecResultEqual1;
 	BOOL bIsPatternLearned;
+	int iBorderColor;
 	void clear ()
 	{
 		vector<Mat> ().swap (vecPyramid);

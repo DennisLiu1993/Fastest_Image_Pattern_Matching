@@ -436,7 +436,7 @@ void CMatchToolDlg::LearnPattern ()
 	int iTopLayer = GetTopLayer (&m_matDst, (int)sqrt ((double)m_iMinReduceArea));
 	buildPyramid (m_matDst, m_TemplData.vecPyramid, iTopLayer);
 	s_TemplData* templData = &m_TemplData;
-
+	templData->iBorderColor = mean (m_matDst).val[0] < 128 ? 255 : 0;
 	int iSize = templData->vecPyramid.size ();
 	templData->resize (iSize);
 
@@ -825,27 +825,35 @@ BOOL CMatchToolDlg::Match ()
 		double dValue, dMaxVal;
 		double dRotate = clock ();
 		Size sizeBest = GetBestRotationSize (vecMatSrcPyr[iTopLayer].size (), pTemplData->vecPyramid[iTopLayer].size (), vecAngles[i]);
+
+		Size sizePat = pTemplData->vecPyramid[iTopLayer].size ();
+		BOOL bWrongSize = (sizePat.width < sizeBest.width && sizePat.height > sizeBest.height)
+			|| (sizePat.width > sizeBest.width && sizePat.height < sizeBest.height
+				|| sizePat.area () > sizeBest.area ());
+		if (bWrongSize)
+			continue;
+
 		float fTranslationX = (sizeBest.width - 1) / 2.0f - ptCenter.x;
 		float fTranslationY = (sizeBest.height - 1) / 2.0f - ptCenter.y;
 		matR.at<double> (0, 2) += fTranslationX;
 		matR.at<double> (1, 2) += fTranslationY;
-		warpAffine (vecMatSrcPyr[iTopLayer], matRotatedSrc, matR, sizeBest);
+		warpAffine (vecMatSrcPyr[iTopLayer], matRotatedSrc, matR, sizeBest, INTER_LINEAR, BORDER_CONSTANT, Scalar (pTemplData->iBorderColor));
 
 		MatchTemplate (matRotatedSrc, pTemplData, matResult, iTopLayer);
 		//matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iTopLayer], matResult, CV_TM_CCOEFF_NORMED);
 
 		minMaxLoc (matResult, 0, &dMaxVal, 0, &ptMaxLoc);
-
-		//vecMatchParameter[i * (m_iMaxPos + MATCH_CANDIDATE_NUM)] = s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dMaxVal, vecAngles[i]);
+		if (dMaxVal < vecLayerScore[iTopLayer])
+			continue;
 		vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dMaxVal, vecAngles[i]));
 
 		for (int j = 0; j < m_iMaxPos + MATCH_CANDIDATE_NUM - 1; j++)
 		{
 			ptMaxLoc = GetNextMaxLoc (matResult, ptMaxLoc, -1, pTemplData->vecPyramid[iTopLayer].cols, pTemplData->vecPyramid[iTopLayer].rows, dValue, m_dMaxOverlap);
-			//vecMatchParameter[i * (m_iMaxPos + MATCH_CANDIDATE_NUM) + j + 1] = s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]);
-			vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]));
 			if (dValue < vecLayerScore[iTopLayer])
-				break;
+				continue;
+			vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]));
+			
 		}
 	}
 	//FilterWithScore (&vecMatchParameter, m_dScore - 0.05*iTopLayer);
@@ -1278,8 +1286,6 @@ void CMatchToolDlg::CCOEFF_Denominator (cv::Mat& matSrc, s_TemplData* pTemplData
 
 		for (j = 0; j < matResult.cols; j += 1, idx += 1, idx2 += 1)
 		{
-			if (i == 172 && j == 623)
-				int a = 0;
 			double num = rrow[j], t;
 			double wndMean2 = 0, wndSum2 = 0;
 
