@@ -140,22 +140,28 @@ BOOL CMatchToolDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 設定小圖示
 	// TODO: 在此加入額外的初始設定
 	
-
-	cvNamedWindow ("SrcView");
+	namedWindow ("SrcView", WINDOW_AUTOSIZE);
 	HWND hWnd = (HWND)cvGetWindowHandle ("SrcView");
-	HWND hParent = ::GetParent (hWnd);
+	HWND hParent = (HWND)FindWindow (NULL, L"SrcView");
+	HWND hh = ::SetParent (hWnd, GetDlgItem (IDC_STATIC_SRC_VIEW)->m_hWnd);
+
 	::ShowWindow (hParent, SW_HIDE);
-	::SetParent (hWnd, GetDlgItem (IDC_STATIC_SRC_VIEW)->m_hWnd);
 	::ShowWindow (hWnd, SW_SHOW);
 
+	CWnd* pWnd = new CWnd ();
+	pWnd->CWnd::Attach (hParent);
 
 
-	cvNamedWindow ("DstView");
+
+	namedWindow ("DstView", WINDOW_AUTOSIZE);
 	hWnd = (HWND)cvGetWindowHandle ("DstView");
-	hParent = ::GetParent (hWnd);
-	::ShowWindow (hParent, SW_HIDE);
+	hParent = (HWND)FindWindow (NULL, L"DstView");
 	::SetParent (hWnd, GetDlgItem (IDC_STATIC_DST_VIEW)->m_hWnd);
-	::ShowWindow (hWnd, SW_HIDE);
+	::ShowWindow (hParent, SW_HIDE);
+	::ShowWindow (hWnd, SW_SHOW);
+
+	CWnd* pWnd2 = new CWnd ();
+	pWnd2->CWnd::Attach (hParent);
 	//菜單
 	m_Menu.LoadMenuW (IDR_MENU_FILE);
 	SetMenu (NULL);
