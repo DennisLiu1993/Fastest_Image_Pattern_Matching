@@ -143,10 +143,11 @@ BOOL CMatchToolDlg::OnInitDialog()
 	namedWindow ("SrcView", WINDOW_AUTOSIZE);
 	HWND hWnd = (HWND)cvGetWindowHandle ("SrcView");
 	HWND hParent = (HWND)FindWindow (NULL, L"SrcView");
-	HWND hh = ::SetParent (hWnd, GetDlgItem (IDC_STATIC_SRC_VIEW)->m_hWnd);
-
 	::ShowWindow (hParent, SW_HIDE);
+	HWND hh = ::SetParent (hWnd, GetDlgItem (IDC_STATIC_SRC_VIEW)->m_hWnd);
+	hWnd = (HWND)cvGetWindowHandle ("SrcView");
 	::ShowWindow (hWnd, SW_SHOW);
+	::ShowWindow (hh, SW_SHOW);
 
 	CWnd* pWnd = new CWnd ();
 	pWnd->CWnd::Attach (hParent);
@@ -158,10 +159,8 @@ BOOL CMatchToolDlg::OnInitDialog()
 	hParent = (HWND)FindWindow (NULL, L"DstView");
 	::SetParent (hWnd, GetDlgItem (IDC_STATIC_DST_VIEW)->m_hWnd);
 	::ShowWindow (hParent, SW_HIDE);
-	::ShowWindow (hWnd, SW_SHOW);
+	::ShowWindow (hWnd, SW_HIDE);
 
-	CWnd* pWnd2 = new CWnd ();
-	pWnd2->CWnd::Attach (hParent);
 	//菜單
 	m_Menu.LoadMenuW (IDR_MENU_FILE);
 	SetMenu (NULL);
@@ -862,35 +861,34 @@ BOOL CMatchToolDlg::Match ()
 			
 		}
 	}
+
 	//FilterWithScore (&vecMatchParameter, m_dScore - 0.05*iTopLayer);
 
 	//record rotated rectangle、ROI and angle
 	int iMatchSize = (int)vecMatchParameter.size ();
 	int iDstW = pTemplData->vecPyramid[iTopLayer].cols, iDstH = pTemplData->vecPyramid[iTopLayer].rows;
-	if (m_bDebugMode)
-	{
-		for (int i = 0; i < iMatchSize; i++)
-		{
-			Point2f ptLT, ptRT, ptRB, ptLB;
-			double dRAngle = -vecMatchParameter[i].dMatchAngle * D2R;
-			ptLT = ptRotatePt2f (vecMatchParameter[i].pt, ptCenter, dRAngle);
-			ptRT = Point2f (ptLT.x + iDstW * (float)cos (dRAngle), ptLT.y - iDstW * (float)sin (dRAngle));
-			ptLB = Point2f (ptLT.x + iDstH * (float)sin (dRAngle), ptLT.y + iDstH * (float)cos (dRAngle));
-			ptRB = Point2f (ptRT.x + iDstH * (float)sin (dRAngle), ptRT.y + iDstH * (float)cos (dRAngle));
-			//紀錄旋轉矩形
-			Point2f ptRectCenter = Point2f ((ptLT.x + ptRT.x + ptLB.x + ptRB.x) / 4.0f, (ptLT.y + ptRT.y + ptLB.y + ptRB.y) / 4.0f);
-			vecMatchParameter[i].rectR = RotatedRect (ptRectCenter, pTemplData->vecPyramid[iTopLayer].size (), (float)vecMatchParameter[i].dMatchAngle);
-
-		}
-		//紀錄旋轉矩形
-	}
 	
-	//FilterWithRotatedRect (&vecMatchParameter, CV_TM_CCORR_NORMED, m_dMaxOverlap);
+	for (int i = 0; i < iMatchSize; i++)
+	{
+		Point2f ptLT, ptRT, ptRB, ptLB;
+		double dRAngle = -vecMatchParameter[i].dMatchAngle * D2R;
+		ptLT = ptRotatePt2f (vecMatchParameter[i].pt, ptCenter, dRAngle);
+		ptRT = Point2f (ptLT.x + iDstW * (float)cos (dRAngle), ptLT.y - iDstW * (float)sin (dRAngle));
+		ptLB = Point2f (ptLT.x + iDstH * (float)sin (dRAngle), ptLT.y + iDstH * (float)cos (dRAngle));
+		ptRB = Point2f (ptRT.x + iDstH * (float)sin (dRAngle), ptRT.y + iDstH * (float)cos (dRAngle));
+		//紀錄旋轉矩形
+		Point2f ptRectCenter = Point2f ((ptLT.x + ptRT.x + ptLB.x + ptRB.x) / 4.0f, (ptLT.y + ptRT.y + ptLB.y + ptRB.y) / 4.0f);
+		vecMatchParameter[i].rectR = RotatedRect (ptRectCenter, pTemplData->vecPyramid[iTopLayer].size (), (float)vecMatchParameter[i].dMatchAngle);
+
+	}
+	//紀錄旋轉矩形
+	FilterWithRotatedRect (&vecMatchParameter, CV_TM_CCOEFF_NORMED, m_dMaxOverlap * m_dMaxOverlap);
+
 
 	//顯示第一層結果
 	if (m_bDebugMode)
 	{
-		int iDebugScale = 2;
+		int iDebugScale = 1;
 
 		Mat matShow, matResize;
 		resize (vecMatSrcPyr[iTopLayer], matResize, vecMatSrcPyr[iTopLayer].size () * iDebugScale);
