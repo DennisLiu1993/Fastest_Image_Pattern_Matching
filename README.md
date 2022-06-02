@@ -19,7 +19,7 @@ The result means the similarity of two images, and the formular is as followed:
 [Template Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Dst7.bmp): 762 X 521
 Library    |Index | Score | Angle | PosX | PosY | Execution Time
 ---------  |----- |-------|-------| -----  | -----  |----------------------
-My Tool    |0     |   1   | 0.046 |1725.857|1045.433| **112ms**
+My Tool    |0     |   1   | 0.046 |1725.857|1045.433| **76ms**
 My Tool    |1     |   0.998   | -119.979 |2662.869|1537.446| 
 My Tool    |2     |  0.991   | 120.150 |1768.936|2098.494| 
 Cognex     |0     |   1   | 0.030 |1725.960|1045.470| **125ms**
