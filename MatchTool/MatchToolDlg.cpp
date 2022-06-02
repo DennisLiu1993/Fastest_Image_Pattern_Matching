@@ -143,23 +143,16 @@ BOOL CMatchToolDlg::OnInitDialog()
 	namedWindow ("SrcView", WINDOW_AUTOSIZE);
 	HWND hWnd = (HWND)cvGetWindowHandle ("SrcView");
 	HWND hParent = (HWND)FindWindow (NULL, L"SrcView");
-	::ShowWindow (hParent, SW_HIDE);
-	HWND hh = ::SetParent (hWnd, GetDlgItem (IDC_STATIC_SRC_VIEW)->m_hWnd);
-	hWnd = (HWND)cvGetWindowHandle ("SrcView");
-	::ShowWindow (hWnd, SW_SHOW);
-	::ShowWindow (hh, SW_SHOW);
-
-	CWnd* pWnd = new CWnd ();
-	pWnd->CWnd::Attach (hParent);
+	HWND hOrgParent = ::SetParent (hWnd, GetDlgItem (IDC_STATIC_SRC_VIEW)->m_hWnd);
+	::ShowWindow (hOrgParent, SW_HIDE);
 
 
 
 	namedWindow ("DstView", WINDOW_AUTOSIZE);
 	hWnd = (HWND)cvGetWindowHandle ("DstView");
 	hParent = (HWND)FindWindow (NULL, L"DstView");
-	::SetParent (hWnd, GetDlgItem (IDC_STATIC_DST_VIEW)->m_hWnd);
-	::ShowWindow (hParent, SW_HIDE);
-	::ShowWindow (hWnd, SW_HIDE);
+	hOrgParent = ::SetParent (hWnd, GetDlgItem (IDC_STATIC_DST_VIEW)->m_hWnd);
+	::ShowWindow (hOrgParent, SW_HIDE);
 
 	//菜單
 	m_Menu.LoadMenuW (IDR_MENU_FILE);
