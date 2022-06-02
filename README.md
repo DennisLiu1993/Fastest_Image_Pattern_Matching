@@ -65,15 +65,15 @@ test0 - with user interface
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Image/UIwithResult.jpg)
 
-test1 (164ms, TargetNum=5, Overlap=0.8, Score=0.5, Tolerance Angle=180)
+test1 (164ms 80ms (SIMD version), TargetNum=5, Overlap=0.8, Score=0.8, Tolerance Angle=180)
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result8.jpg)
 
-test2 (237 ms)
+test2 (237 ms, 175ms (SIMD Version))
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result1.jpg)
 
-test3 (152 ms)
+test3 (152 ms, 100ms (SIMD Version))
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result2.jpg)
 
@@ -85,7 +85,7 @@ test5 (27 ms)
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result4.jpg)
 
-test6 (1157ms, Target Number=15, Score=0.8, Tolerance Angle=180, Min Reduced Area=256)
+test6 (1157ms, 657ms (SIMD Version), Target Number=15, Score=0.8, Tolerance Angle=180, Min Reduced Area=256)
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result6.jpg)
 
