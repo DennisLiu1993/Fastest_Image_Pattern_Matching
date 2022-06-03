@@ -12,7 +12,7 @@ The result means the similarity of two images, and the formular is as followed:
 3. minimizing the inspection area on the top level of image pyrimid
 4. optimized rotation time from opencv by setting needed "size" and modifying rotation matrix
 5. rotation precision is as high as possible
-6. **SIMD version of image convolution **(extremely speed up)
+6. **SIMD version of image convolution** (extremely speed up)
 
 # Comparison with commercial libraries
 [Inspection Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src7.bmp) : 4024 X 3036 
