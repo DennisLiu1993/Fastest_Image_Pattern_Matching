@@ -35,7 +35,7 @@ note: if you want to get a best performance, please make sure you are using rele
 1.	Download Visual Studio 2017 or newer versions
 2.	Check on the option of "x86 and x64 version of C++ MFC"
 3.	Install
-4.	Open ELCVMatchTool.sln
+4.	Open MatchTool.vcxproj
 5.	Upgrade if it is required
 6.	Open this project's property page
 7.	Modified "General-Output Directory" to the .exe directory you want (usually the directory where your opencv_worldXX.dll locates)
