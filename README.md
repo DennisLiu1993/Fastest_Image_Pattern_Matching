@@ -32,34 +32,6 @@ Aisys    |2     |  0.979   | 120.000 |1769.63|2099.780|
 
 note: if you want to get a best performance, please make sure you are using release verson (both this project and OpenCV dll). That's because O2-related significantly affect efficiency, and the difference of Debug and Release can up to 7 times for some cases.
 
-# Steps to build this project
-1.	Download Visual Studio 2017 or newer versions
-2.	Check on the option of "x86 and x64 version of C++ MFC"
-3.	Install
-4.	Open MatchTool.vcxproj
-5.	Upgrade if it is required
-6.	Open this project's property page
-7.	Modified "General-Output Directory" to the .exe directory you want (usually the directory where your opencv_worldXX.dll locates)
-8.	Choose the SDK version you have in "General-Windows SDK Version"
-9.	Choose the right toolset you have in "General-Platform Toolset" (for me, it is Visual Studio 2017 (v141))
-10.	Go to "VC++ Directories", and type in "Include Directories" for your own OpenCV (e.g. C:\OpenCV3.1\opencv\build\include or C:\OpenCV4.0\opencv\build\include)
-11.	Type in "Library Directories" for your own OpenCV's library path (the directory where your opencv_worldXX.lib locates)
-12.	Go to "Linker-Input", and type in library name (e.g. opencv_world310d_vs2017.lib or opencv_world401d.lib)
-13.	Make sure that your opencv_worldXX.dll and MatchTool.Lang are in the same directory as .exe of this project
-
-# Adaptation for OpenCV4.X
-1.Select Debug_4.X or Release_4.X in "Solution Configuration"
-![image](https://user-images.githubusercontent.com/104763587/169198235-f023ba0f-2039-4f00-8816-d270f7c03575.png)
-
-2.Do step 10~12 in previous section
-
-
-# Usage of this project
-1.	Select the Language you want
-2.	Drag Source Image to the Left Area
-3.	Drag Dst Image to the Right Top Area
-4.	Push "Execute Button"
-
 # Tests
 
 test0 - with user interface
@@ -89,6 +61,34 @@ test5 (27 ms)
 test6 (1157ms, 657ms (SIMD Version), Target Number=15, Score=0.8, Tolerance Angle=180, Min Reduced Area=256)
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result6.jpg)
+
+# Steps to build this project
+1.	Download Visual Studio 2017 or newer versions
+2.	Check on the option of "x86 and x64 version of C++ MFC"
+3.	Install
+4.	Open MatchTool.vcxproj
+5.	Upgrade if it is required
+6.	Open this project's property page
+7.	Modified "General-Output Directory" to the .exe directory you want (usually the directory where your opencv_worldXX.dll locates)
+8.	Choose the SDK version you have in "General-Windows SDK Version"
+9.	Choose the right toolset you have in "General-Platform Toolset" (for me, it is Visual Studio 2017 (v141))
+10.	Go to "VC++ Directories", and type in "Include Directories" for your own OpenCV (e.g. C:\OpenCV3.1\opencv\build\include or C:\OpenCV4.0\opencv\build\include)
+11.	Type in "Library Directories" for your own OpenCV's library path (the directory where your opencv_worldXX.lib locates)
+12.	Go to "Linker-Input", and type in library name (e.g. opencv_world310d_vs2017.lib or opencv_world401d.lib)
+13.	Make sure that your opencv_worldXX.dll and MatchTool.Lang are in the same directory as .exe of this project
+
+# Adaptation for OpenCV4.X
+1.Select Debug_4.X or Release_4.X in "Solution Configuration"
+![image](https://user-images.githubusercontent.com/104763587/169198235-f023ba0f-2039-4f00-8816-d270f7c03575.png)
+
+2.Do step 10~12 in previous section
+
+
+# Usage of this project
+1.	Select the Language you want
+2.	Drag Source Image to the Left Area
+3.	Drag Dst Image to the Right Top Area
+4.	Push "Execute Button"
 
 # Parameters Setting
 1. **Target Number**: possible max objects you want to find in the inspection image
