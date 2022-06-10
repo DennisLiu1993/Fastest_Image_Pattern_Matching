@@ -526,7 +526,6 @@ void CMatchToolDlg::OnLoadDst ()
 void CMatchToolDlg::OnDropFiles (HDROP hDropInfo)
 {
 	// TODO: 在此加入您的訊息處理常式程式碼和 (或) 呼叫預設值
-	USES_CONVERSION;
 	int iCount_droppedfile = DragQueryFile (hDropInfo, 0xFFFFFFFF, NULL, 0);
 	CRect rectSrc, rectDst;
 	::GetWindowRect (GetDlgItem (IDC_STATIC_SRC_VIEW)->m_hWnd, rectSrc);
@@ -544,7 +543,6 @@ void CMatchToolDlg::OnDropFiles (HDROP hDropInfo)
 		if (DragQueryFile (hDropInfo, i, filepath, MAX_PATH) > 0)
 		{
 			CString cstrFile = filepath;
-			String strFile (T2A (cstrFile));
 
 			_TCHAR szPath[MAX_PATH];
 			_TCHAR szDrv[_MAX_DRIVE] = _T ("");//C: or D:
@@ -555,18 +553,16 @@ void CMatchToolDlg::OnDropFiles (HDROP hDropInfo)
 			_tsplitpath_s (filepath, szDrv, _MAX_DRIVE, szDir, _MAX_DIR, szName, _MAX_FNAME, szExt, _MAX_EXT);
 			_stprintf_s (szPath, MAX_PATH, _T ("%s%s%s"), szDrv, szDir, szName);
 			CString cstrFileName (szPath);
-			String strFileName (T2A (cstrFileName));
-
-			CString strSize;
-
 			if (rectSrc.PtInRect (pointCursor))
 			{
-				m_matSrc = imread (strFile, IMREAD_GRAYSCALE);
+				m_matSrc = Read_TCHAR (cstrFile.GetBuffer ());
+				cstrFile.ReleaseBuffer ();
 				LoadSrc ();
 			}
 			else if (rectDst.PtInRect (pointCursor))
 			{
-				m_matDst = imread (strFile, IMREAD_GRAYSCALE);
+				m_matDst = Read_TCHAR (cstrFile.GetBuffer ());
+				cstrFile.ReleaseBuffer ();
 				LoadDst ();
 			}
 		}
@@ -845,13 +841,6 @@ BOOL CMatchToolDlg::Match ()
 		double dValue, dMaxVal;
 		double dRotate = clock ();
 		Size sizeBest = GetBestRotationSize (vecMatSrcPyr[iTopLayer].size (), pTemplData->vecPyramid[iTopLayer].size (), vecAngles[i]);
-
-		Size sizePat = pTemplData->vecPyramid[iTopLayer].size ();
-		BOOL bWrongSize = (sizePat.width < sizeBest.width && sizePat.height > sizeBest.height)
-			|| (sizePat.width > sizeBest.width && sizePat.height < sizeBest.height
-				|| sizePat.area () > sizeBest.area ());
-		if (bWrongSize)
-			continue;
 
 		float fTranslationX = (sizeBest.width - 1) / 2.0f - ptCenter.x;
 		float fTranslationY = (sizeBest.height - 1) / 2.0f - ptCenter.y;
@@ -1419,7 +1408,9 @@ Size CMatchToolDlg::GetBestRotationSize (Size sizeSrc, Size sizeDst, double dRAn
 	Point2f ptRT_R = ptRotatePt2f (Point2f (ptRT), ptCenter, dRAngle_radian);
 
 	float fTopY = max (max (ptLT_R.y, ptLB_R.y), max (ptRB_R.y, ptRT_R.y));
-	float fRightestX = max (max (ptLT_R.x, ptLB_R.x), max (ptRB_R.x, ptRT_R.x));
+	float fBottomY = min (min (ptLT_R.y, ptLB_R.y), min (ptRB_R.y, ptRT_R.y));
+	float fRightX = max (max (ptLT_R.x, ptLB_R.x), max (ptRB_R.x, ptRT_R.x));
+	float fLeftX = min (min (ptLT_R.x, ptLB_R.x), min (ptRB_R.x, ptRT_R.x));
 
 	if (dRAngle > 360)
 		dRAngle -= 360;
@@ -1462,9 +1453,17 @@ Size CMatchToolDlg::GetBestRotationSize (Size sizeSrc, Size sizeDst, double dRAn
 	float fH2 = sizeDst.height * sin (dAngle * D2R) * cos (dAngle * D2R);
 
 	int iHalfHeight = (int)ceil (fTopY - ptCenter.y - fH1);
-	int iHalfWidth = (int)ceil (fRightestX - ptCenter.x - fH2);
+	int iHalfWidth = (int)ceil (fRightX - ptCenter.x - fH2);
+	
+	Size sizeRet (iHalfWidth * 2, iHalfHeight * 2);
 
-	return Size (iHalfWidth * 2, iHalfHeight * 2);
+	BOOL bWrongSize = (sizeDst.width < sizeRet.width && sizeDst.height > sizeRet.height)
+		|| (sizeDst.width > sizeRet.width && sizeDst.height < sizeRet.height
+			|| sizeDst.area () > sizeRet.area ());
+	if (bWrongSize)
+		sizeRet = Size (int (fRightX - fLeftX + 0.5), int (fTopY - fBottomY + 0.5));
+
+	return sizeRet;
 }
 Point2f CMatchToolDlg::ptRotatePt2f (Point2f ptInput, Point2f ptOrg, double dAngle)
 {
