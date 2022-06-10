@@ -43,6 +43,27 @@ bool compareMatchResultByPos (const s_SingleTargetMatch& lhs, const s_SingleTarg
 };
 bool compareMatchResultByScore (const s_SingleTargetMatch& lhs, const s_SingleTargetMatch& rhs) { return lhs.dMatchScore > rhs.dMatchScore; }
 bool compareMatchResultByPosX (const s_SingleTargetMatch& lhs, const s_SingleTargetMatch& rhs) { return lhs.ptCenter.x < rhs.ptCenter.x; }
+Mat Read_TCHAR (TCHAR* pTChar)
+{
+	CString cstr;
+	cstr.Format (L"%s", pTChar);
+
+	FILE* f = NULL;
+	_tfopen_s (&f, cstr, _T ("rb"));
+	if (!f)
+		return Mat ();
+	fseek (f, 0, SEEK_END);
+	size_t buffer_size = ftell (f);
+	fseek (f, 0, SEEK_SET);
+
+	std::vector<char> buffer (buffer_size);
+	fread (&buffer[0], sizeof (char), buffer_size, f);
+	fclose (f);
+
+	Mat mat = imdecode (buffer, IMREAD_GRAYSCALE);
+
+	return mat;
+}
 
 void MouseCall (int event, int x, int y, int flag, void* pUserData);
 const Scalar colorWaterBlue (230, 255, 102);
@@ -106,6 +127,7 @@ void CMatchToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text (pDX, IDC_EDIT_TOLERANCE3, m_dTolerance3);
 	DDX_Text (pDX, IDC_EDIT_TOLERANCE4, m_dTolerance4);
 	DDX_Control (pDX, IDC_COMBO_LAN, m_cbLanSelect);
+	DDX_Control (pDX, IDC_CHECK_SIMD, m_ckSIMD);
 }
 
 BEGIN_MESSAGE_MAP(CMatchToolDlg, CDialogEx)
@@ -244,7 +266,7 @@ BOOL CMatchToolDlg::OnInitDialog()
 	//語言
 	ChangeLanguage (L"English");
 	//GetDlgItem (IDC_STATIC_MAX_POS)->SetFont (&font);
-	
+
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
@@ -275,9 +297,9 @@ void CMatchToolDlg::OnLoadSrc ()
 		//開啟檔案成功
 		CString szFileName = fd.GetPathName (); //取得開啟檔案的全名(包含路徑)
 		
-		USES_CONVERSION;
-
-		m_matSrc = imread (String (T2A (szFileName.GetBuffer ())), IMREAD_GRAYSCALE);
+		//USES_CONVERSION;
+		//m_matSrc = imread (String (T2A (szFileName.GetBuffer ())), IMREAD_GRAYSCALE);
+		m_matSrc = Read_TCHAR (szFileName.GetBuffer ());
 		szFileName.ReleaseBuffer ();
 
 		LoadSrc ();
@@ -493,7 +515,7 @@ void CMatchToolDlg::OnLoadDst ()
 
 		USES_CONVERSION;
 
-		m_matDst = imread (String (T2A (szFileName.GetBuffer ())), IMREAD_GRAYSCALE);
+		m_matDst = Read_TCHAR (szFileName.GetBuffer ());
 		szFileName.ReleaseBuffer ();
 
 		LoadDst ();
@@ -841,6 +863,8 @@ BOOL CMatchToolDlg::Match ()
 		//matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iTopLayer], matResult, CV_TM_CCOEFF_NORMED);
 
 		minMaxLoc (matResult, 0, &dMaxVal, 0, &ptMaxLoc);
+		Point ptMin; double dMin = 0;
+		minMaxLoc (matResult, &dMin, &dMaxVal, &ptMin, &ptMaxLoc);
 		if (dMaxVal < vecLayerScore[iTopLayer])
 			continue;
 		vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dMaxVal, vecAngles[i]));
@@ -962,11 +986,9 @@ BOOL CMatchToolDlg::Match ()
 				double dBigValue = -1;
 				for (int j = 0; j < iSize; j++)
 				{
-					Mat rMat, matResult, matRotatedSrc;
+					Mat matResult, matRotatedSrc;
 					double dMaxValue = 0;
 					Point ptMaxLoc;
-					if (iLayer == 0)
-						int a = 0;
 					GetRotatedROI (vecMatSrcPyr[iLayer], pTemplData->vecPyramid[iLayer].size (), ptLT * 2, vecAngles[j], matRotatedSrc);
 					MatchTemplate (matRotatedSrc, pTemplData, matResult, iLayer);
 					//matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iLayer], matResult, CV_TM_CCOEFF_NORMED);
@@ -1259,33 +1281,36 @@ inline int IM_Conv_SIMD (unsigned char* pCharKernel, unsigned char *pCharConv, i
 
 void CMatchToolDlg::MatchTemplate (cv::Mat& matSrc, s_TemplData* pTemplData, cv::Mat& matResult, int iLayer)
 {
-#ifdef ORG
-	matchTemplate (matSrc, pTemplData->vecPyramid[iLayer], matResult, CV_TM_CCORR);
-#else
-	//From ImageShop
-	matResult.create (matSrc.rows - pTemplData->vecPyramid[iLayer].rows + 1,
-		matSrc.cols - pTemplData->vecPyramid[iLayer].cols + 1, CV_32FC1);
-	matResult.setTo (0);
-	cv::Mat& matTemplate = pTemplData->vecPyramid[iLayer];
-
-	int  t_r_end = matTemplate.rows, t_r = 0;
-	for (int r = 0; r < matResult.rows; r++)
+	if (m_ckSIMD.GetCheck ())
 	{
-		float* r_matResult = matResult.ptr<float> (r);
-		uchar* r_source = matSrc.ptr<uchar> (r);
-		uchar* r_template, *r_sub_source;
-		for (int c = 0; c < matResult.cols; ++c, ++r_matResult, ++r_source)
+
+		//From ImageShop
+		matResult.create (matSrc.rows - pTemplData->vecPyramid[iLayer].rows + 1,
+			matSrc.cols - pTemplData->vecPyramid[iLayer].cols + 1, CV_32FC1);
+		matResult.setTo (0);
+		cv::Mat& matTemplate = pTemplData->vecPyramid[iLayer];
+
+		int  t_r_end = matTemplate.rows, t_r = 0;
+		for (int r = 0; r < matResult.rows; r++)
 		{
-			r_template = matTemplate.ptr<uchar> ();
-			r_sub_source = r_source;
-			for (t_r = 0; t_r < t_r_end; ++t_r, r_sub_source += matSrc.cols, r_template += matTemplate.cols)
+			float* r_matResult = matResult.ptr<float> (r);
+			uchar* r_source = matSrc.ptr<uchar> (r);
+			uchar* r_template, *r_sub_source;
+			for (int c = 0; c < matResult.cols; ++c, ++r_matResult, ++r_source)
 			{
-				*r_matResult = *r_matResult + IM_Conv_SIMD (r_template, r_sub_source, matTemplate.cols);
+				r_template = matTemplate.ptr<uchar> ();
+				r_sub_source = r_source;
+				for (t_r = 0; t_r < t_r_end; ++t_r, r_sub_source += matSrc.cols, r_template += matTemplate.cols)
+				{
+					*r_matResult = *r_matResult + IM_Conv_SIMD (r_template, r_sub_source, matTemplate.cols);
+				}
 			}
 		}
+		//From ImageShop
 	}
-	//From ImageShop
-#endif
+	else
+		matchTemplate (matSrc, pTemplData->vecPyramid[iLayer], matResult, CV_TM_CCORR);
+	
 	/*Mat diff;
 	absdiff(matResult, matResult, diff);
 	double dMaxValue;
@@ -1675,6 +1700,39 @@ void CMatchToolDlg::LoadSrc ()
 	strSize.Format (L"%s : %d X %d", m_strLanSourceImageSize, m_matSrc.cols, m_matSrc.rows);
 	m_statusBar.SetPaneText (1, strSize);
 	
+	//Test
+	//double d1 = clock ();
+	//Mat matResult;
+	//matchTemplate (m_matSrc, m_matDst, matResult, CV_TM_CCORR);
+	//double d2 = clock ();
+
+	////From ImageShop
+	//matResult.create (m_matSrc.rows - m_matDst.rows + 1,
+	//	m_matSrc.cols - m_matDst.cols + 1, CV_32FC1);
+	//matResult.setTo (0);
+	//cv::Mat& matTemplate = m_matDst;
+
+	//int  t_r_end = matTemplate.rows, t_r = 0;
+	//for (int r = 0; r < matResult.rows; r++)
+	//{
+	//	float* r_matResult = matResult.ptr<float> (r);
+	//	uchar* r_source = m_matSrc.ptr<uchar> (r);
+	//	uchar* r_template, *r_sub_source;
+	//	for (int c = 0; c < matResult.cols; ++c, ++r_matResult, ++r_source)
+	//	{
+	//		r_template = matTemplate.ptr<uchar> ();
+	//		r_sub_source = r_source;
+	//		for (t_r = 0; t_r < t_r_end; ++t_r, r_sub_source += m_matSrc.cols, r_template += matTemplate.cols)
+	//		{
+	//			*r_matResult = *r_matResult + IM_Conv_SIMD (r_template, r_sub_source, matTemplate.cols);
+	//		}
+	//	}
+	//}
+	//double d3 = clock ();
+
+	//double d = (d3 - d2) / (d2 - d1);
+	//CString str; str.Format (L"%.3f", d); AfxMessageBox (str);
+	//
 }
 
 void CMatchToolDlg::LoadDst ()

@@ -212,4 +212,5 @@ public:
 	CString m_strLanDstImageSize;
 	CString m_strLanPixelPos;
 	afx_msg void OnCbnSelchangeComboLan ();
+	CButton m_ckSIMD;
 };
