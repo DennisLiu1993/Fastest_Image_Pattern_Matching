@@ -852,8 +852,6 @@ BOOL CMatchToolDlg::Match ()
 		//matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iTopLayer], matResult, CV_TM_CCOEFF_NORMED);
 
 		minMaxLoc (matResult, 0, &dMaxVal, 0, &ptMaxLoc);
-		Point ptMin; double dMin = 0;
-		minMaxLoc (matResult, &dMin, &dMaxVal, &ptMin, &ptMaxLoc);
 		if (dMaxVal < vecLayerScore[iTopLayer])
 			continue;
 		vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dMaxVal, vecAngles[i]));
