@@ -1,5 +1,5 @@
 # Fastest Image Pattern Matching
-**The fasted template matching implementation on the Internet.**
+**The best template matching implementation on the Internet.**
 
 Using C++/MFC/OpenCV to build a Normalized Cross Corelation-based image alignment algorithm
 
