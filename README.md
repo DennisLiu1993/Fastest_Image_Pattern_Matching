@@ -30,7 +30,7 @@ Aisys    |0     |   1   | 0 |1726.000|1045.500| **202ms**
 Aisys    |1     |   0.990   | -119.935 |2663.630|1539.060| 
 Aisys    |2     |  0.979   | 120.000 |1769.63|2099.780| 
 
-note: if you want to get a best performance, please make sure you are using release verson (both this project and OpenCV dll). That's because O2-related significantly affect efficiency, and the difference of Debug and Release can up to 7 times for some cases.
+note: if you want to get a best performance, please make sure you are using release verson (both this project and OpenCV dll). That's because O2-related settings significantly affects efficiency, and the difference of Debug and Release can up to 7 times for some cases.
 
 # Tests
 
