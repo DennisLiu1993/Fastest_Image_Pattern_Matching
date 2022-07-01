@@ -883,7 +883,6 @@ BOOL CMatchToolDlg::Match ()
 		//紀錄旋轉矩形
 		Point2f ptRectCenter = Point2f ((ptLT.x + ptRT.x + ptLB.x + ptRB.x) / 4.0f, (ptLT.y + ptRT.y + ptLB.y + ptRB.y) / 4.0f);
 		vecMatchParameter[i].rectR = RotatedRect (ptRectCenter, pTemplData->vecPyramid[iTopLayer].size (), (float)vecMatchParameter[i].dMatchAngle);
-
 	}
 	//紀錄旋轉矩形
 	//FilterWithRotatedRect (&vecMatchParameter, CV_TM_CCOEFF_NORMED, m_dMaxOverlap * m_dMaxOverlap);
@@ -1692,6 +1691,10 @@ void CMatchToolDlg::LoadSrc ()
 	this->ScreenToClient (rectSrc); //将区域坐标由 对话框区转成对话框客户区坐标
 	InvalidateRect (rectSrc);
 	//防止顯示不同比例圖片時DC殘留
+
+	//Scroll Bar
+	m_hScrollBar.SetScrollPos (0);
+	m_vScrollBar.SetScrollPos (0);
 	RefreshSrcView ();
 	CString strSize;
 	strSize.Format (L"%s : %d X %d", m_strLanSourceImageSize, m_matSrc.cols, m_matSrc.rows);
