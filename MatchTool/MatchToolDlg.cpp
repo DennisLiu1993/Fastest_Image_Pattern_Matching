@@ -848,7 +848,7 @@ BOOL CMatchToolDlg::Match ()
 		matR.at<double> (1, 2) += fTranslationY;
 		warpAffine (vecMatSrcPyr[iTopLayer], matRotatedSrc, matR, sizeBest, INTER_LINEAR, BORDER_CONSTANT, Scalar (pTemplData->iBorderColor));
 
-		MatchTemplate (matRotatedSrc, pTemplData, matResult, iTopLayer);
+		MatchTemplate (matRotatedSrc, pTemplData, matResult, iTopLayer, FALSE);
 		//matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iTopLayer], matResult, CV_TM_CCOEFF_NORMED);
 
 		minMaxLoc (matResult, 0, &dMaxVal, 0, &ptMaxLoc);
@@ -976,7 +976,7 @@ BOOL CMatchToolDlg::Match ()
 					double dMaxValue = 0;
 					Point ptMaxLoc;
 					GetRotatedROI (vecMatSrcPyr[iLayer], pTemplData->vecPyramid[iLayer].size (), ptLT * 2, vecAngles[j], matRotatedSrc);
-					MatchTemplate (matRotatedSrc, pTemplData, matResult, iLayer);
+					MatchTemplate (matRotatedSrc, pTemplData, matResult, iLayer, TRUE);
 					//matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iLayer], matResult, CV_TM_CCOEFF_NORMED);
 					minMaxLoc (matResult, 0, &dMaxValue, 0, &ptMaxLoc);
 					vecNewMatchParameter[j] = s_MatchParameter (ptMaxLoc, dMaxValue, vecAngles[j]);
@@ -987,7 +987,7 @@ BOOL CMatchToolDlg::Match ()
 						dBigValue = vecNewMatchParameter[j].dMatchScore;
 					}
 					//次像素估計
-					if (ptMaxLoc.x == 0 || ptMaxLoc.y == 0 || ptMaxLoc.y == matResult.cols - 1 || ptMaxLoc.x == matResult.rows - 1)
+					if (ptMaxLoc.x == 0 || ptMaxLoc.y == 0 || ptMaxLoc.x == matResult.cols - 1 || ptMaxLoc.y == matResult.rows - 1)
 						vecNewMatchParameter[j].bPosOnBorder = TRUE;
 					if (!vecNewMatchParameter[j].bPosOnBorder)
 					{
@@ -997,8 +997,6 @@ BOOL CMatchToolDlg::Match ()
 					}
 					//次像素估計
 				}
-				//sort (vecNewMatchParameter.begin (), vecNewMatchParameter.end (), compareScoreBig2Small);
-				//if (vecNewMatchParameter[iMaxScoreIndex].dMatchScore < m_dScore - 0.05 * iLayer)
 				if (vecNewMatchParameter[iMaxScoreIndex].dMatchScore < vecLayerScore[iLayer])
 					break;
 				//次像素估計
@@ -1006,7 +1004,7 @@ BOOL CMatchToolDlg::Match ()
 					&& iLayer == 0 
 					&& (!vecNewMatchParameter[iMaxScoreIndex].bPosOnBorder) 
 					&& iMaxScoreIndex != 0 
-					&& iMaxScoreIndex != 4)
+					&& iMaxScoreIndex != 2)
 				{
 					double dNewX = 0, dNewY = 0, dNewAngle = 0;
 					SubPixEsimation ( &vecNewMatchParameter, &dNewX, &dNewY, &dNewAngle, dAngleStep, iMaxScoreIndex);
@@ -1265,9 +1263,9 @@ inline int IM_Conv_SIMD (unsigned char* pCharKernel, unsigned char *pCharConv, i
 }
 //#define ORG
 
-void CMatchToolDlg::MatchTemplate (cv::Mat& matSrc, s_TemplData* pTemplData, cv::Mat& matResult, int iLayer)
+void CMatchToolDlg::MatchTemplate (cv::Mat& matSrc, s_TemplData* pTemplData, cv::Mat& matResult, int iLayer, BOOL bUseSIMD)
 {
-	if (m_ckSIMD.GetCheck ())
+	if (m_ckSIMD.GetCheck () && bUseSIMD)
 	{
 
 		//From ImageShop

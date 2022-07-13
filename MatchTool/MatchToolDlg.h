@@ -133,7 +133,7 @@ private:
 	void LearnPattern ();
 	BOOL Match ();
 	int GetTopLayer (Mat* matTempl, int iMinDstLength);
-	void MatchTemplate (cv::Mat& matSrc, s_TemplData* pTemplData, cv::Mat& matResult, int iLayer);
+	void MatchTemplate (cv::Mat& matSrc, s_TemplData* pTemplData, cv::Mat& matResult, int iLayer, BOOL bUseSIMD);
 	void GetRotatedROI (Mat& matSrc, Size size, Point2f ptLT, double dAngle, Mat& matROI);
 	void CCOEFF_Denominator (cv::Mat& matSrc, s_TemplData* pTemplData, cv::Mat& matResult, int iLayer);
 	Size  GetBestRotationSize (Size sizeSrc, Size sizeDst, double dRAngle);
