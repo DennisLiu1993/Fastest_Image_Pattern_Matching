@@ -113,6 +113,6 @@ test6 (1157ms, 657ms (SIMD Version), Target Number=15, Score=0.8, Tolerance Angl
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/NCCBasedOCR.gif)
 
-#Reference Paper
+# Reference Paper
 1. [Template Matching using Fast Normalized Cross Correlation](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Template%20Matching%20using%20Fast%20Normalized%20Cross%20Correlation.pdf)
 2. [computers_and_electrical_engineering_an_accelerating_cpu_based_correlation-based_image_alignment](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/computers_and_electrical_engineering_an_accelerating_cpu_based_correlation-based_image_alignment.pdf)
