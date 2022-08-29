@@ -661,6 +661,8 @@ void CMatchToolDlg::ChangeLanguage (CString strLan)
 	GetDlgItem (IDC_BUTTON_EXECUTE)->SetWindowText (szBuf);
 	GetPrivateProfileString (strLan, L"Language", L"Language:", szBuf, _MAX_PATH, strLanPath);
 	GetDlgItem (IDC_STATIC_LANGUAGE)->SetWindowText (szBuf);
+	GetPrivateProfileString (strLan, L"SubPixel", L"SubPixel:", szBuf, _MAX_PATH, strLanPath);
+	GetDlgItem (IDC_CHECK_SUBPIXEL)->SetWindowText (szBuf);
 
 	GetPrivateProfileString (strLan, L"Index", L"Index", szBuf, _MAX_PATH, strLanPath);
 	m_strLanIndex = szBuf;
