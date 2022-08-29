@@ -10,7 +10,7 @@ The result means the similarity of two images, and the formular is as followed:
 1. rotation invariant
 2. using image pyrimid as a searching strategy
 3. minimizing the inspection area on the top level of image pyrimid
-4. optimized rotation time from opencv by setting needed "size" and modifying rotation matrix
+4. optimiz rotation time from opencv by setting needed "size" and modifying rotation matrix
 5. rotation precision is as high as possible
 6. **SIMD version of image convolution** (extremely speed up for large template)
 
