@@ -8,13 +8,13 @@ The result means the similarity of two images, and the formular is as followed:
 
 # Improvements
 1. rotation invariant
-2. using image pyrimid as a searching strategy
+2. using image pyrimid as a searching strategy to speed up 4~128 times the original NCC method (depending on template size)
 3. minimizing the inspection area on the top level of image pyrimid
 4. optimiz rotation time from opencv by setting needed "size" and modifying rotation matrix
 5. rotation precision is as high as possible
 6. **SIMD version of image convolution** (extremely speed up for large template)
 
-# Comparison with commercial libraries
+# In Comparison with commercial libraries
 [Inspection Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src7.bmp) : 4024 X 3036 
 
 [Template Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Dst7.bmp): 762 X 521
@@ -30,7 +30,7 @@ Aisys    |0     |   1   | 0 |1726.000|1045.500| **202ms**
 Aisys    |1     |   0.990   | -119.935 |2663.630|1539.060| 
 Aisys    |2     |  0.979   | 120.000 |1769.63|2099.780| 
 
-note: if you want to get a best performance, please make sure you are using release verson (both this project and OpenCV dll). That's because O2-related settings significantly affects efficiency, and the difference of Debug and Release can up to 7 times for some cases.
+**note**: if you want to get a best performance, please make sure you are using release verson (both this project and OpenCV dll). That's because O2-related settings significantly affects efficiency, and the difference of Debug and Release can up to 7 times for some cases.
 
 # Tests
 
@@ -83,7 +83,6 @@ test6 (1157ms, 657ms (SIMD Version), Target Number=15, Score=0.8, Tolerance Angl
 
 2.Do step 10~12 in previous section
 
-
 # Usage of this project
 1.	Select the Language you want
 2.	Drag Source Image to the Left Area
@@ -108,11 +107,11 @@ test6 (1157ms, 657ms (SIMD Version), Target Number=15, Score=0.8, Tolerance Angl
 
 ![Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/Fastest%20implement%20of%20Image%20Pattern%20Matching%20with%20arbitrary%20rotation%20using%20OpenCV.%E5%9F%BA%E6%96%BCOpenCV%E7%9A%84%E8%B6%85%E5%BF%AB%E9%80%9F%E5%9C%96%E5%83%8F%E5%AE%9A%E4%BD%8D%E6%BC%94%E7%AE%97%E6%B3%95.gif)
 
-# This project can also be used as OCR
+# This project can also be used as Optical Character Recognition (OCR)
 [youtube link](https://www.youtube.com/watch?v=lM0NK6xVNfg)
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/NCCBasedOCR.gif)
 
-# Reference Paper
+# Reference Papers
 1. [Template Matching using Fast Normalized Cross Correlation](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Template%20Matching%20using%20Fast%20Normalized%20Cross%20Correlation.pdf)
 2. [computers_and_electrical_engineering_an_accelerating_cpu_based_correlation-based_image_alignment](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/computers_and_electrical_engineering_an_accelerating_cpu_based_correlation-based_image_alignment.pdf)
