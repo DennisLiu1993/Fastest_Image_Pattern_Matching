@@ -15,7 +15,7 @@ The result means the similarity of two images, and the formular is as followed:
 6. **SIMD version of image convolution** (extremely speed up for large template)
 7. Optimizing function GetNextMaxLoc (), for cases whose template size is extremely smaller than source size, and large TargetNumber. It gets so far.
    
-      Test case: [Src10](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src10.bmp) and [Dst10](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Dst10.jpg)
+      Test case: [Src10](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src10.bmp) (3648 X 3648) and [Dst10](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Dst10.jpg) (54 X 54)
       
       **Effect: time consuming reduces from 534 ms to 100 ms, ~80%**
 
