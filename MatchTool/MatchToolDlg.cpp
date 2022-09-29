@@ -80,16 +80,17 @@ const Scalar colorGoldenrod (15, 185, 255);
 
 CMatchToolDlg::CMatchToolDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MATCHTOOL_DIALOG, pParent)
-	, m_iMaxPos (5)
+	, m_iMaxPos (100)
 	, m_dMaxOverlap (0)
-	, m_dScore (0.8)
+	, m_dScore (0.5)
 	, m_dToleranceAngle (0)
-	, m_iMinReduceArea (256)
+	, m_iMinReduceArea (1024)
 	, m_bDebugMode (FALSE)
 	, m_dTolerance1 (40)
 	, m_dTolerance2 (60)
 	, m_dTolerance3 (-110)
 	, m_dTolerance4 (-100)
+	, m_strTotalNum (_T (""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_dDstScale = 1;
@@ -128,6 +129,7 @@ void CMatchToolDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text (pDX, IDC_EDIT_TOLERANCE4, m_dTolerance4);
 	DDX_Control (pDX, IDC_COMBO_LAN, m_cbLanSelect);
 	DDX_Control (pDX, IDC_CHECK_SIMD, m_ckSIMD);
+	DDX_Text (pDX, IDC_STATIC_NUM_SHOW, m_strTotalNum);
 }
 
 BEGIN_MESSAGE_MAP(CMatchToolDlg, CDialogEx)
@@ -682,6 +684,8 @@ void CMatchToolDlg::ChangeLanguage (CString strLan)
 	m_strLanDstImageSize = szBuf;
 	GetPrivateProfileString (strLan, L"PixelPos", L"Pixel Pos", szBuf, _MAX_PATH, strLanPath);
 	m_strLanPixelPos = szBuf;
+	GetPrivateProfileString (strLan, L"Num", L"Num:", szBuf, _MAX_PATH, strLanPath);
+	GetDlgItem (IDC_STATIC_NUM)->SetWindowText (szBuf);
 
 	m_statusBar.SetPaneText (0, m_strLanExecutionTime);
 	m_statusBar.SetPaneText (1, m_strLanSourceImageSize);
@@ -853,18 +857,24 @@ BOOL CMatchToolDlg::Match ()
 		MatchTemplate (matRotatedSrc, pTemplData, matResult, iTopLayer, FALSE);
 		//matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iTopLayer], matResult, CV_TM_CCOEFF_NORMED);
 
-		minMaxLoc (matResult, 0, &dMaxVal, 0, &ptMaxLoc);
+		//Optimize GetNextMaxLoc
+		//minMaxLoc (matResult, 0, &dMaxVal, 0, &ptMaxLoc);
+		s_BlockMax blockMax (matResult, pTemplData->vecPyramid[iTopLayer].size ());
+		blockMax.GetMaxValueLoc (dMaxVal, ptMaxLoc);
+		//Optimize GetNextMaxLoc
 		if (dMaxVal < vecLayerScore[iTopLayer])
 			continue;
 		vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dMaxVal, vecAngles[i]));
-
+		
 		for (int j = 0; j < m_iMaxPos + MATCH_CANDIDATE_NUM - 1; j++)
 		{
-			ptMaxLoc = GetNextMaxLoc (matResult, ptMaxLoc, -1, pTemplData->vecPyramid[iTopLayer].cols, pTemplData->vecPyramid[iTopLayer].rows, dValue, m_dMaxOverlap);
+			//Optimize GetNextMaxLoc
+			//ptMaxLoc = GetNextMaxLoc (matResult, ptMaxLoc, pTemplData->vecPyramid[iTopLayer].size (), dValue, m_dMaxOverlap);
+			ptMaxLoc = GetNextMaxLoc (matResult, ptMaxLoc, pTemplData->vecPyramid[iTopLayer].size (), dValue, m_dMaxOverlap, blockMax);
+			//Optimize GetNextMaxLoc
 			if (dValue < vecLayerScore[iTopLayer])
 				continue;
 			vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]));
-			
 		}
 	}
 	sort (vecMatchParameter.begin (), vecMatchParameter.end (), compareScoreBig2Small);
@@ -1130,7 +1140,8 @@ BOOL CMatchToolDlg::Match ()
 		m_listMsg.SetItemText (i, SUBITEM_POS_Y, str);
 		//Msg
 	}
-
+	m_strTotalNum.Format (L"%d", (int)m_vecSingleTargetData.size ());
+	UpdateData (FALSE);
 	//sort (m_vecSingleTargetData.begin (), m_vecSingleTargetData.end (), compareMatchResultByPos);
 	m_bShowResult = TRUE;
 
@@ -1560,7 +1571,7 @@ void CMatchToolDlg::FilterWithRotatedRect (vector<s_MatchParameter>* vec, int iM
 			++it;
 	}
 }
-Point CMatchToolDlg::GetNextMaxLoc (Mat & matResult, Point ptMaxLoc, double dMinValue, int iTemplateW, int iTemplateH, double& dMaxValue, double dMaxOverlap)
+Point CMatchToolDlg::GetNextMaxLoc (Mat & matResult, Point ptMaxLoc, Size sizeTemplate, double& dMaxValue, double dMaxOverlap)
 {
 	//比對到的區域完全不重疊 : +-一個樣板寬高
 	//int iStartX = ptMaxLoc.x - iTemplateW;
@@ -1576,17 +1587,27 @@ Point CMatchToolDlg::GetNextMaxLoc (Mat & matResult, Point ptMaxLoc, double dMin
 	//return ptNewMaxLoc;
 
 	//比對到的區域需考慮重疊比例
-	int iStartX = ptMaxLoc.x - iTemplateW * (1 - dMaxOverlap);
-	int iStartY = ptMaxLoc.y - iTemplateH * (1 - dMaxOverlap);
-	int iEndX = ptMaxLoc.x + iTemplateW * (1 - dMaxOverlap);
-
-	int iEndY = ptMaxLoc.y + iTemplateH * (1 - dMaxOverlap);
+	int iStartX = ptMaxLoc.x - sizeTemplate.width * (1 - dMaxOverlap);
+	int iStartY = ptMaxLoc.y - sizeTemplate.height * (1 - dMaxOverlap);
 	//塗黑
-	rectangle (matResult, Rect (iStartX, iStartY, 2 * iTemplateW * (1- dMaxOverlap), 2 * iTemplateH * (1- dMaxOverlap)), Scalar (dMinValue), CV_FILLED);
+	rectangle (matResult, Rect (iStartX, iStartY, 2 * sizeTemplate.width * (1- dMaxOverlap), 2 * sizeTemplate.height * (1- dMaxOverlap)), Scalar (-1), CV_FILLED);
 	//得到下一個最大值
 	Point ptNewMaxLoc;
 	minMaxLoc (matResult, 0, &dMaxValue, 0, &ptNewMaxLoc);
 	return ptNewMaxLoc;
+}
+Point CMatchToolDlg::GetNextMaxLoc (Mat & matResult, Point ptMaxLoc, Size sizeTemplate, double & dMaxValue, double dMaxOverlap, s_BlockMax & blockMax)
+{
+	//比對到的區域需考慮重疊比例
+	int iStartX = ptMaxLoc.x - sizeTemplate.width * (1 - dMaxOverlap);
+	int iStartY = ptMaxLoc.y - sizeTemplate.height * (1 - dMaxOverlap);
+	Rect rectIgnore (iStartX, iStartY, 2 * sizeTemplate.width * (1 - dMaxOverlap), 2 * sizeTemplate.height * (1 - dMaxOverlap));
+	//塗黑
+	rectangle (matResult, rectIgnore , Scalar (-1), CV_FILLED);
+	blockMax.UpdateMax (rectIgnore);
+	Point ptReturn;
+	blockMax.GetMaxValueLoc (dMaxValue, ptReturn);
+	return ptReturn;
 }
 void CMatchToolDlg::SortPtWithCenter (vector<Point2f>& vecSort)
 {

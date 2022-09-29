@@ -43,8 +43,9 @@
 #define IDC_BUTTON_CHANGE_TOLERANCE_MODE 1030
 #define IDC_STATIC_LANGUAGE             1031
 #define IDC_COMBO_LAN                   1032
-#define IDC_CHECK2                      1033
 #define IDC_CHECK_SIMD                  1033
+#define IDC_STATIC_NUM                  1034
+#define IDC_STATIC_NUM_SHOW             1035
 #define ID_32771                        32771
 #define ID_LOAD_SRC                     32772
 #define ID_32773                        32773
@@ -56,7 +57,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         32775
-#define _APS_NEXT_CONTROL_VALUE         1034
+#define _APS_NEXT_CONTROL_VALUE         1036
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
