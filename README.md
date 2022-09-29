@@ -13,6 +13,11 @@ The result means the similarity of two images, and the formular is as followed:
 4. optimiz rotation time from opencv by setting needed "size" and modifying rotation matrix
 5. rotation precision is as high as possible
 6. **SIMD version of image convolution** (extremely speed up for large template)
+7. Optimizing function GetNextMaxLoc (), for cases whose template size is extremely smaller than source size, and large TargetNumber. It gets so far.
+   
+      Test case: [Src10](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src10.bmp) and [Dst10](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Dst10.jpg)
+      
+      **Effect: time consuming reduces from 534 ms to 100 ms, ~80%**
 
 # In Comparison with commercial libraries
 [Inspection Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src7.bmp) : 4024 X 3036 
