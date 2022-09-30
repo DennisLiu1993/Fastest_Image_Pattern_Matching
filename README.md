@@ -13,7 +13,9 @@ The result means the similarity of two images, and the formular is as followed:
 4. optimiz rotation time from opencv by setting needed "size" and modifying rotation matrix
 5. rotation precision is as high as possible
 6. **SIMD version of image convolution** (extremely speed up for large template)
-7. Optimizing function GetNextMaxLoc (), for cases whose template size is extremely smaller than source size, and large TargetNumber. It gets so far.
+7. Optimizing function GetNextMaxLoc (), for special cases whose template size is extremely smaller than source size, and for large TargetNumber. 
+   
+   It gets so far.
    
       Test case: [Src10](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src10.bmp) (3648 X 3648) and [Dst10](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Dst10.jpg) (54 X 54)
       
@@ -66,6 +68,9 @@ test5 (27 ms)
 test6 (1157ms, 657ms (SIMD Version), Target Number=15, Score=0.8, Tolerance Angle=180, Min Reduced Area=256)
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result6.jpg)
+
+test7 (18ms, TargetNum=100, Score=0.5, Tolerance Angle=0, MaxOverlap=0.5, Min Reduced Area=1024)
+![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result9.jpg)
 
 # Steps to build this project
 1.	Download Visual Studio 2017 or newer versions
