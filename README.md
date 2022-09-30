@@ -17,7 +17,7 @@ The result means the similarity of two images, and the formular is as followed:
    
       Test case: [Src10](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src10.bmp) (3648 X 3648) and [Dst10](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Dst10.jpg) (54 X 54)
       
-      **Effect: time consuming reduces from 534 ms to 100 ms, ~80%**
+      **Effect: time consuming reduces from 534 ms to 100 ms. speed up 434%**
 
 # In Comparison with commercial libraries
 [Inspection Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src7.bmp) : 4024 X 3036 
