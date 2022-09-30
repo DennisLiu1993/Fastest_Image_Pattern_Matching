@@ -8,12 +8,11 @@ The result means the similarity of two images, and the formular is as followed:
 
 # Improvements
 1. rotation invariant
-2. using image pyrimid as a searching strategy to speed up 4~128 times the original NCC method (depending on template size)
-3. minimizing the inspection area on the top level of image pyrimid
-4. optimiz rotation time from opencv by setting needed "size" and modifying rotation matrix
+2. using image pyrimid as a searching strategy to speed up 4~128 times the original NCC method (depending on template size), minimizing the inspection area on the top level of image pyrimid
+3. optimizing rotation time comsuming from OpenCV by setting needed "size" and modifying rotation matrix
 5. rotation precision is as high as possible
-6. **SIMD version of image convolution** (extremely speed up for large template)
-7. Optimizing function GetNextMaxLoc (), for special cases whose template size is extremely smaller than source size, and for large TargetNumber. 
+6. **SIMD version of image convolution** (especially useful for large templates)
+7. optimizing the function GetNextMaxLoc (), for special cases whose template sizes are extremely smaller than source sizes, and for large TargetNumber. 
    
    It gets so far.
    
