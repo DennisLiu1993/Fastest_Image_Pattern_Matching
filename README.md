@@ -38,7 +38,7 @@ Aisys    |2     |  0.979   | 120.000 |1769.63|2099.780|
 
 **note**: if you want to get a best performance, please make sure you are using release verson (both this project and OpenCV dll). That's because O2-related settings significantly affects efficiency, and the difference of Debug and Release can up to 7 times for some cases.
 
-# Tests
+# Tests (witb I7-10700)
 
 test0 - with user interface
 
