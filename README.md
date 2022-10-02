@@ -12,7 +12,7 @@ The result means the similarity of two images, and the formular is as followed:
 3. optimizing rotation time comsuming from OpenCV by setting needed "size" and modifying rotation matrix
 5. rotation precision is as high as possible
 6. **SIMD version of image convolution** (especially useful for large templates)
-7. optimizing the function GetNextMaxLoc (), for special cases whose template sizes are extremely smaller than source sizes, and for large TargetNumber. 
+7. optimizing the function GetNextMaxLoc () with struct s_BlockMax, for special cases whose template sizes are extremely smaller than source sizes, and for large TargetNumber. 
    
    It gets so far.
    
