@@ -134,7 +134,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\OpenCV3.1\opencv\build\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\OpenCV3.1\build2017_world\lib;$(LibraryPath)</LibraryPath>
-    <OutDir>C:\OpenCV3.1\build2017_world\bin\Debug</OutDir>
+    <OutDir>C:\OpenCV3.1\build2017_world\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_4.X|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -167,7 +167,7 @@
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>C:\OpenCV3.1\build2017_world\lib;$(LibraryPath)</LibraryPath>
     <IncludePath>C:\OpenCV3.1\opencv\build\include;$(IncludePath)</IncludePath>
-    <OutDir>C:\OpenCV3.1\build2017_world\bin\Release\</OutDir>
+    <OutDir>C:\OpenCV3.1\build2017_world\bin\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

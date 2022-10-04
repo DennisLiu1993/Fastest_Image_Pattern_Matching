@@ -80,7 +80,7 @@ const Scalar colorGoldenrod (15, 185, 255);
 
 CMatchToolDlg::CMatchToolDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MATCHTOOL_DIALOG, pParent)
-	, m_iMaxPos (5)
+	, m_iMaxPos (10)
 	, m_dMaxOverlap (0)
 	, m_dScore (0.8)
 	, m_dToleranceAngle (0)
@@ -838,7 +838,8 @@ BOOL CMatchToolDlg::Match ()
 	for (int iLayer = 1; iLayer <= iTopLayer; iLayer++)
 		vecLayerScore[iLayer] = vecLayerScore[iLayer - 1] * 0.9;
 
-	
+	Size sizePat = pTemplData->vecPyramid[iTopLayer].size ();
+	BOOL bCalMaxByBlock = (vecMatSrcPyr[iTopLayer].size ().area () / sizePat.area () > 500) && m_iMaxPos > 10;
 	for (int i = 0; i < iSize; i++)
 	{
 		Mat matRotatedSrc, matR = getRotationMatrix2D (ptCenter, vecAngles[i], 1);
@@ -855,26 +856,35 @@ BOOL CMatchToolDlg::Match ()
 		warpAffine (vecMatSrcPyr[iTopLayer], matRotatedSrc, matR, sizeBest, INTER_LINEAR, BORDER_CONSTANT, Scalar (pTemplData->iBorderColor));
 
 		MatchTemplate (matRotatedSrc, pTemplData, matResult, iTopLayer, FALSE);
-		//matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iTopLayer], matResult, CV_TM_CCOEFF_NORMED);
 
-		//Optimize GetNextMaxLoc
-		//minMaxLoc (matResult, 0, &dMaxVal, 0, &ptMaxLoc);
-		s_BlockMax blockMax (matResult, pTemplData->vecPyramid[iTopLayer].size ());
-		blockMax.GetMaxValueLoc (dMaxVal, ptMaxLoc);
-		//Optimize GetNextMaxLoc
-		if (dMaxVal < vecLayerScore[iTopLayer])
-			continue;
-		vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dMaxVal, vecAngles[i]));
-		
-		for (int j = 0; j < m_iMaxPos + MATCH_CANDIDATE_NUM - 1; j++)
+		if (bCalMaxByBlock)
 		{
-			//Optimize GetNextMaxLoc
-			//ptMaxLoc = GetNextMaxLoc (matResult, ptMaxLoc, pTemplData->vecPyramid[iTopLayer].size (), dValue, m_dMaxOverlap);
-			ptMaxLoc = GetNextMaxLoc (matResult, ptMaxLoc, pTemplData->vecPyramid[iTopLayer].size (), dValue, m_dMaxOverlap, blockMax);
-			//Optimize GetNextMaxLoc
-			if (dValue < vecLayerScore[iTopLayer])
+			s_BlockMax blockMax (matResult, pTemplData->vecPyramid[iTopLayer].size ());
+			blockMax.GetMaxValueLoc (dMaxVal, ptMaxLoc);
+			if (dMaxVal < vecLayerScore[iTopLayer])
 				continue;
-			vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]));
+			vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dMaxVal, vecAngles[i]));
+			for (int j = 0; j < m_iMaxPos + MATCH_CANDIDATE_NUM - 1; j++)
+			{
+				ptMaxLoc = GetNextMaxLoc (matResult, ptMaxLoc, pTemplData->vecPyramid[iTopLayer].size (), dValue, m_dMaxOverlap, blockMax);
+				if (dMaxVal < vecLayerScore[iTopLayer])
+					continue;
+				vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]));
+			}
+		}
+		else
+		{
+			minMaxLoc (matResult, 0, &dMaxVal, 0, &ptMaxLoc);
+			if (dMaxVal < vecLayerScore[iTopLayer])
+				continue;
+			vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dMaxVal, vecAngles[i]));
+			for (int j = 0; j < m_iMaxPos + MATCH_CANDIDATE_NUM - 1; j++)
+			{
+				ptMaxLoc = GetNextMaxLoc (matResult, ptMaxLoc, pTemplData->vecPyramid[iTopLayer].size (), dValue, m_dMaxOverlap);
+				if (dMaxVal < vecLayerScore[iTopLayer])
+					continue;
+				vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]));
+			}
 		}
 	}
 	sort (vecMatchParameter.begin (), vecMatchParameter.end (), compareScoreBig2Small);
@@ -903,13 +913,14 @@ BOOL CMatchToolDlg::Match ()
 	//顯示第一層結果
 	if (m_bDebugMode)
 	{
-		int iDebugScale = 1;
+		int iDebugScale = 2;
 
 		Mat matShow, matResize;
 		resize (vecMatSrcPyr[iTopLayer], matResize, vecMatSrcPyr[iTopLayer].size () * iDebugScale);
 		cvtColor (matResize, matShow, CV_GRAY2BGR);
 		iMatchSize = (int)vecMatchParameter.size ();
 		string str = format ("Toplayer, Candidate:%d", iMatchSize);
+		vector<Point2f> vec;
 		for (int i = 0; i < iMatchSize; i++)
 		{
 			Point2f ptLT, ptRT, ptRB, ptLB;
@@ -923,18 +934,21 @@ BOOL CMatchToolDlg::Match ()
 			line (matShow, ptRB * iDebugScale, ptRT * iDebugScale, Scalar (0, 255, 0));
 			line (matShow, ptRT * iDebugScale, ptLT * iDebugScale, Scalar (0, 255, 0));
 			circle (matShow, ptLT * iDebugScale, 1, Scalar (0, 0, 255));
+			vec.push_back (ptLT* iDebugScale);
+			vec.push_back (ptRT* iDebugScale);
+			vec.push_back (ptLB* iDebugScale);
+			vec.push_back (ptRB* iDebugScale);
 
 			string strText = format ("%d", i);
 			putText (matShow, strText, ptLT *iDebugScale, FONT_HERSHEY_PLAIN, 1, Scalar (0, 255, 0));
-			imshow (str, matShow);
-			
 		}
-		imshow (str, matShow);
-		moveWindow (str, 0, 0);
+		cvNamedWindow (str.c_str (), 0x10000000);
+		Rect rectShow = boundingRect (vec);
+		imshow (str, matShow);// (rectShow));
+		//moveWindow (str, 0, 0);
 	}
-
 	//顯示第一層結果
-	int a = 0;
+
 	//第一階段結束
 	BOOL bSubPixelEstimation = m_bSubPixel.GetCheck ();
 	int iStopLayer = 0;
@@ -1052,7 +1066,7 @@ BOOL CMatchToolDlg::Match ()
 	}
 	FilterWithScore (&vecAllResult, m_dScore);
 
-	//最後再次濾掉重疊
+	//最後濾掉重疊
 	iDstW = pTemplData->vecPyramid[iStopLayer].cols, iDstH = pTemplData->vecPyramid[iStopLayer].rows;
 
 	for (int i = 0; i < (int)vecAllResult.size (); i++)
@@ -1068,7 +1082,7 @@ BOOL CMatchToolDlg::Match ()
 		vecAllResult[i].rectR = RotatedRect (ptRectCenter, pTemplData->vecPyramid[iStopLayer].size (), (float)vecAllResult[i].dMatchAngle);
 	}
 	FilterWithRotatedRect (&vecAllResult, CV_TM_CCOEFF_NORMED, m_dMaxOverlap);
-	//最後再次濾掉重疊
+	//最後濾掉重疊
 
 	//根據分數排序
 	sort (vecAllResult.begin (), vecAllResult.end (), compareScoreBig2Small);
@@ -1142,7 +1156,6 @@ BOOL CMatchToolDlg::Match ()
 	}
 	m_strTotalNum.Format (L"%d", (int)m_vecSingleTargetData.size ());
 	UpdateData (FALSE);
-	//sort (m_vecSingleTargetData.begin (), m_vecSingleTargetData.end (), compareMatchResultByPos);
 	m_bShowResult = TRUE;
 
 	RefreshSrcView ();
@@ -1280,7 +1293,6 @@ void CMatchToolDlg::MatchTemplate (cv::Mat& matSrc, s_TemplData* pTemplData, cv:
 {
 	if (m_ckSIMD.GetCheck () && bUseSIMD)
 	{
-
 		//From ImageShop
 		matResult.create (matSrc.rows - pTemplData->vecPyramid[iLayer].rows + 1,
 			matSrc.cols - pTemplData->vecPyramid[iLayer].cols + 1, CV_32FC1);
@@ -1501,15 +1513,6 @@ void CMatchToolDlg::FilterWithScore (vector<s_MatchParameter>* vec, double dScor
 		return;
 	vec->erase (vec->begin () + iIndexDelete, vec->end ());
 	return;
-	//刪除小於比對分數的元素
-	vector<s_MatchParameter>::iterator it;
-	for (it = vec->begin (); it != vec->end ();)
-	{
-		if (((*it).dMatchScore < dScore))
-			it = vec->erase (it);
-		else
-			++it;
-	}
 }
 void CMatchToolDlg::FilterWithRotatedRect (vector<s_MatchParameter>* vec, int iMethod, double dMaxOverLap)
 {
