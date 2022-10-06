@@ -135,6 +135,7 @@
     <IncludePath>C:\OpenCV3.1\opencv\build\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\OpenCV3.1\build2017_world\lib;$(LibraryPath)</LibraryPath>
     <OutDir>C:\OpenCV3.1\build2017_world\bin\</OutDir>
+    <TargetName>$(ProjectName)_D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_4.X|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -168,6 +169,7 @@
     <LibraryPath>C:\OpenCV3.1\build2017_world\lib;$(LibraryPath)</LibraryPath>
     <IncludePath>C:\OpenCV3.1\opencv\build\include;$(IncludePath)</IncludePath>
     <OutDir>C:\OpenCV3.1\build2017_world\bin\</OutDir>
+    <TargetName>$(ProjectName)_R</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -186,6 +188,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

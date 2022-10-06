@@ -29,7 +29,6 @@
 
 #define FONT_SIZE 115
 // CMatchToolDlg 對話方塊
-
 bool compareScoreBig2Small (const s_MatchParameter& lhs, const s_MatchParameter& rhs) { return  lhs.dMatchScore > rhs.dMatchScore; }
 bool comparePtWithAngle (const pair<Point2f, double> lhs, const pair<Point2f, double> rhs) { return lhs.second < rhs.second; }
 bool compareMatchResultByPos (const s_SingleTargetMatch& lhs, const s_SingleTargetMatch& rhs)
@@ -888,27 +887,10 @@ BOOL CMatchToolDlg::Match ()
 		}
 	}
 	sort (vecMatchParameter.begin (), vecMatchParameter.end (), compareScoreBig2Small);
-	//FilterWithScore (&vecMatchParameter, m_dScore - 0.05*iTopLayer);
 
-	//record rotated rectangle、ROI and angle
+	
 	int iMatchSize = (int)vecMatchParameter.size ();
 	int iDstW = pTemplData->vecPyramid[iTopLayer].cols, iDstH = pTemplData->vecPyramid[iTopLayer].rows;
-	
-	for (int i = 0; i < iMatchSize; i++)
-	{
-		Point2f ptLT, ptRT, ptRB, ptLB;
-		double dRAngle = -vecMatchParameter[i].dMatchAngle * D2R;
-		ptLT = ptRotatePt2f (vecMatchParameter[i].pt, ptCenter, dRAngle);
-		ptRT = Point2f (ptLT.x + iDstW * (float)cos (dRAngle), ptLT.y - iDstW * (float)sin (dRAngle));
-		ptLB = Point2f (ptLT.x + iDstH * (float)sin (dRAngle), ptLT.y + iDstH * (float)cos (dRAngle));
-		ptRB = Point2f (ptRT.x + iDstH * (float)sin (dRAngle), ptRT.y + iDstH * (float)cos (dRAngle));
-		//紀錄旋轉矩形
-		Point2f ptRectCenter = Point2f ((ptLT.x + ptRT.x + ptLB.x + ptRB.x) / 4.0f, (ptLT.y + ptRT.y + ptLB.y + ptRB.y) / 4.0f);
-		vecMatchParameter[i].rectR = RotatedRect (ptRectCenter, pTemplData->vecPyramid[iTopLayer].size (), (float)vecMatchParameter[i].dMatchAngle);
-	}
-	//紀錄旋轉矩形
-	//FilterWithRotatedRect (&vecMatchParameter, CV_TM_CCOEFF_NORMED, m_dMaxOverlap * m_dMaxOverlap);
-
 
 	//顯示第一層結果
 	if (m_bDebugMode)
@@ -918,7 +900,6 @@ BOOL CMatchToolDlg::Match ()
 		Mat matShow, matResize;
 		resize (vecMatSrcPyr[iTopLayer], matResize, vecMatSrcPyr[iTopLayer].size () * iDebugScale);
 		cvtColor (matResize, matShow, CV_GRAY2BGR);
-		iMatchSize = (int)vecMatchParameter.size ();
 		string str = format ("Toplayer, Candidate:%d", iMatchSize);
 		vector<Point2f> vec;
 		for (int i = 0; i < iMatchSize; i++)
@@ -1002,6 +983,7 @@ BOOL CMatchToolDlg::Match ()
 					double dMaxValue = 0;
 					Point ptMaxLoc;
 					GetRotatedROI (vecMatSrcPyr[iLayer], pTemplData->vecPyramid[iLayer].size (), ptLT * 2, vecAngles[j], matRotatedSrc);
+
 					MatchTemplate (matRotatedSrc, pTemplData, matResult, iLayer, TRUE);
 					//matchTemplate (matRotatedSrc, pTemplData->vecPyramid[iLayer], matResult, CV_TM_CCOEFF_NORMED);
 					minMaxLoc (matResult, 0, &dMaxValue, 0, &ptMaxLoc);
@@ -1293,6 +1275,7 @@ void CMatchToolDlg::MatchTemplate (cv::Mat& matSrc, s_TemplData* pTemplData, cv:
 {
 	if (m_ckSIMD.GetCheck () && bUseSIMD)
 	{
+		double d1 = clock ();
 		//From ImageShop
 		matResult.create (matSrc.rows - pTemplData->vecPyramid[iLayer].rows + 1,
 			matSrc.cols - pTemplData->vecPyramid[iLayer].cols + 1, CV_32FC1);
@@ -1602,9 +1585,10 @@ Point CMatchToolDlg::GetNextMaxLoc (Mat & matResult, Point ptMaxLoc, Size sizeTe
 Point CMatchToolDlg::GetNextMaxLoc (Mat & matResult, Point ptMaxLoc, Size sizeTemplate, double & dMaxValue, double dMaxOverlap, s_BlockMax & blockMax)
 {
 	//比對到的區域需考慮重疊比例
-	int iStartX = ptMaxLoc.x - sizeTemplate.width * (1 - dMaxOverlap);
-	int iStartY = ptMaxLoc.y - sizeTemplate.height * (1 - dMaxOverlap);
-	Rect rectIgnore (iStartX, iStartY, 2 * sizeTemplate.width * (1 - dMaxOverlap), 2 * sizeTemplate.height * (1 - dMaxOverlap));
+	int iStartX = int (ptMaxLoc.x - sizeTemplate.width * (1 - dMaxOverlap));
+	int iStartY = int (ptMaxLoc.y - sizeTemplate.height * (1 - dMaxOverlap));
+	Rect rectIgnore (iStartX, iStartY, int (2 * sizeTemplate.width * (1 - dMaxOverlap))
+		, int (2 * sizeTemplate.height * (1 - dMaxOverlap)));
 	//塗黑
 	rectangle (matResult, rectIgnore , Scalar (-1), CV_FILLED);
 	blockMax.UpdateMax (rectIgnore);
