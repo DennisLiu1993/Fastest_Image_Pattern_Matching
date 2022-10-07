@@ -7,12 +7,11 @@ The result means the similarity of two images, and the formular is as followed:
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Image/NCC.jpg)
 
 # Improvements
-1. rotation invariant
+1. rotation invariant, and rotation precision is as high as possible
 2. using image pyrimid as a searching strategy to speed up 4~128 times the original NCC method (depending on template size), minimizing the inspection area on the top level of image pyrimid
 3. optimizing rotation time comsuming from OpenCV by setting needed "size" and modifying rotation matrix
-5. rotation precision is as high as possible
-6. **SIMD version of image convolution** (especially useful for large templates)
-7. optimizing the function GetNextMaxLoc () with struct s_BlockMax, for special cases whose template sizes are extremely smaller than source sizes, and for large TargetNumber. 
+4. **SIMD version of image convolution** (especially useful for large templates)
+5. optimizing the function GetNextMaxLoc () with struct s_BlockMax, for special cases whose template sizes are extremely smaller than source sizes, and for large TargetNumber. 
    
    It gets quite far.
    
@@ -26,7 +25,7 @@ The result means the similarity of two images, and the formular is as followed:
 [Template Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Dst7.bmp): 762 X 521
 Library    |Index | Score | Angle | PosX | PosY | Execution Time
 ---------  |----- |-------|-------| -----  | -----  |----------------------
-My Tool    |0     |   1   | 0.046 |1725.857|1045.433| **76ms**🎖️
+My Tool    |0     |   1   | 0.046 |1725.857|1045.433| **76ms**  🎖️
 My Tool    |1     |   0.998   | -119.979 |2662.869|1537.446| 
 My Tool    |2     |  0.991   | 120.150 |1768.936|2098.494| 
 Cognex     |0     |   1   | 0.030 |1725.960|1045.470| **125ms**
