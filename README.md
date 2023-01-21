@@ -120,6 +120,10 @@ test7 (18ms, TargetNum=100, Score=0.5, Tolerance Angle=0, MaxOverlap=0.5, Min Re
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/NCCBasedOCR.gif)
 
+# Charged Items (contact information: dennisliu1993@gmail.com)
+1. C++/MFC dll for .Net framework
+2. pure C++ dll for Python
+
 # Reference Papers
 1. [Template Matching using Fast Normalized Cross Correlation](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Template%20Matching%20using%20Fast%20Normalized%20Cross%20Correlation.pdf)
 2. [computers_and_electrical_engineering_an_accelerating_cpu_based_correlation-based_image_alignment](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/computers_and_electrical_engineering_an_accelerating_cpu_based_correlation-based_image_alignment.pdf)
