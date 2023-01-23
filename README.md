@@ -120,7 +120,7 @@ test7 (18ms, TargetNum=100, Score=0.5, Tolerance Angle=0, MaxOverlap=0.5, Min Re
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/NCCBasedOCR.gif)
 
-# Charged Items (contact information: dennisliu1993@gmail.com)
+# Special Items (contact information: dennisliu1993@gmail.com)
 1. C++/MFC dll for .Net framework
 2. pure C++ dll for Python
 
