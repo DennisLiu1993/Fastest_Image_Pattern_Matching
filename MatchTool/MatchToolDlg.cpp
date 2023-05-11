@@ -42,6 +42,9 @@ bool compareMatchResultByPos (const s_SingleTargetMatch& lhs, const s_SingleTarg
 };
 bool compareMatchResultByScore (const s_SingleTargetMatch& lhs, const s_SingleTargetMatch& rhs) { return lhs.dMatchScore > rhs.dMatchScore; }
 bool compareMatchResultByPosX (const s_SingleTargetMatch& lhs, const s_SingleTargetMatch& rhs) { return lhs.ptCenter.x < rhs.ptCenter.x; }
+bool compareContours(vector<Point> contour1, vector<Point> contour2) {
+	return contour1.size() > contour2.size();
+}
 Mat Read_TCHAR (TCHAR* pTChar)
 {
 	CString cstr;
@@ -79,10 +82,10 @@ const Scalar colorGoldenrod (15, 185, 255);
 
 CMatchToolDlg::CMatchToolDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MATCHTOOL_DIALOG, pParent)
-	, m_iMaxPos (10)
+	, m_iMaxPos (30)
 	, m_dMaxOverlap (0)
 	, m_dScore (0.8)
-	, m_dToleranceAngle (0)
+	, m_dToleranceAngle (50)
 	, m_iMinReduceArea (256)
 	, m_bDebugMode (FALSE)
 	, m_dTolerance1 (40)
@@ -338,6 +341,10 @@ void CMatchToolDlg::RefreshSrcView ()
 
 	if (m_bShowResult)
 	{
+		vector<vector<Point>> vecChipDraw = m_vecChipContour;
+		for (int i = 0; i < vecChipDraw.size(); i++)
+			for (int j = 0; j < vecChipDraw[i].size(); j++)
+				vecChipDraw[i][j] *= m_dNewScale;
 		for (int i = 0; i < iSize; i++)
 		{
 			Point ptLT (m_vecSingleTargetData[i].ptLT * m_dNewScale);
@@ -376,6 +383,19 @@ void CMatchToolDlg::RefreshSrcView ()
 			DrawMarkCross (matResize, ptC.x, ptC.y, 5, colorGreen, 1);
 			string str = format ("%d", i);
 			putText (matResize, str, (ptLT + ptRT) / 2, FONT_HERSHEY_PLAIN, 1, colorGreen);
+
+			//Draw contour
+			drawContours(matResize, vecChipDraw, i, colorGreen);
+			//hull
+			RotatedRect rRect = fitEllipse(m_vecChipContour[i]);
+			double dEArea = rRect.size.width * rRect.size.height / 4 * CV_PI;
+			rRect.center *= m_dNewScale;
+			rRect.size.width *= m_dNewScale;
+			rRect.size.height *= m_dNewScale;
+			double dArea = contourArea(m_vecChipContour[i]);
+			ellipse(matResize, rRect, colorRed);
+			String strA = format("%.3f", dArea / dEArea);
+			putText(matResize, strA, ptC - Point(8, 0), FONT_HERSHEY_PLAIN, 1.0, colorRed);
 		}
 	}
 
@@ -1099,6 +1119,29 @@ BOOL CMatchToolDlg::Match ()
 		m_vecSingleTargetData.push_back (sstm);
 
 		
+		//HungDang
+		
+		vector<Point2f> vec = { sstm.ptLT, sstm.ptLB, sstm.ptRT, sstm.ptRB };
+		Rect rectBounding = boundingRect(vec);
+		Mat mat = m_matSrc (rectBounding), matB;
+		//GetRotatedROI(m_matSrc, m_matDst.size(), sstm.ptLT, -sstm.dMatchedAngle, mat);
+
+		threshold(mat, matB, 128, 255, THRESH_BINARY | THRESH_OTSU);
+		vector<vector<Point>> contours;
+		vector<Vec4i> hierarchy;
+		findContours(matB, contours, hierarchy, RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+		sort(contours.begin(), contours.end(), compareContours);
+		if (contours.size()) {
+			for (int i = 0; i < contours[0].size(); i++)
+				contours[0][i] += rectBounding.tl();
+		}
+		m_vecChipContour.push_back(contours[0]);
+		//drawContours(mat, contours, 0, colorGreen);
+
+		/*String strT = format("C:\\Users\\User\\Downloads\\hundang\\%d.bmp", i);
+		strT = format("C:\\Users\\User\\Downloads\\hundang\\%d-c.bmp", i);
+		imwrite(strT, mat);*/
+
 
 		//Test Subpixel
 		/*Point2d ptLT = vecAllResult[i].ptSubPixel;
@@ -1145,6 +1188,7 @@ BOOL CMatchToolDlg::Match ()
 
 	return (int)m_vecSingleTargetData.size ();
 }
+
 BOOL CMatchToolDlg::SubPixEsimation (vector<s_MatchParameter>* vec, double* dNewX, double* dNewY, double* dNewAngle, double dAngleStep, int iMaxScoreIndex)
 {
 	//Az=S, (A.T)Az=(A.T)s, z = ((A.T)A).inv (A.T)s
@@ -1237,7 +1281,7 @@ void CMatchToolDlg::OutputRoi (s_SingleTargetMatch sstm)
 // 4個有符號的32位的數據相加的和。
 inline int _mm_hsum_epi32 (__m128i V)      // V3 V2 V1 V0
 {
-	// 實測這個速度要快些，_mm_extract_epi32最慢。
+	// 實測這個速度快一點，_mm_extract_epi32最慢。
 	__m128i T = _mm_add_epi32 (V, _mm_srli_si128 (V, 8));  // V3+V1   V2+V0  V1  V0  
 	T = _mm_add_epi32 (T, _mm_srli_si128 (T, 4));    // V3+V1+V2+V0  V2+V0+V1 V1+V0 V0 
 	return _mm_cvtsi128_si32 (T);       // 提取低位 
@@ -1255,11 +1299,16 @@ inline int IM_Conv_SIMD (unsigned char* pCharKernel, unsigned char *pCharConv, i
 	{
 		__m128i SrcK = _mm_loadu_si128 ((__m128i*)(pCharKernel + Y));
 		__m128i SrcC = _mm_loadu_si128 ((__m128i*)(pCharConv + Y));
-		__m128i SrcK_L = _mm_unpacklo_epi8 (SrcK, Zero);
+		__m128i SrcK_L = _mm_unpacklo_epi8 (SrcK, Zero);//[0 K7 0 K6 0 K5 ...]
 		__m128i SrcK_H = _mm_unpackhi_epi8 (SrcK, Zero);
-		__m128i SrcC_L = _mm_unpacklo_epi8 (SrcC, Zero);
+		__m128i SrcC_L = _mm_unpacklo_epi8 (SrcC, Zero);//[0 C7 0 C6 0 C5 ...]
 		__m128i SrcC_H = _mm_unpackhi_epi8 (SrcC, Zero);
+		//What unpack do c = _mm_unpacklo_epi8 (a, b)
+		/*a = [a15, a14, a13, a12, a11, a10, a9, a8, a7, a6, a5, a4, a3, a2, a1, a0]
+		b = [b15, b14, b13, b12, b11, b10, b9, b8, b7, b6, b5, b4, b3, b2, b1, b0]
+		c = [b7, a7, b6, a6, b5, a5, b4, a4, b3, a3, b2, a2, b1, a1, b0, a0]*/
 		__m128i SumT = _mm_add_epi32 (_mm_madd_epi16 (SrcK_L, SrcC_L), _mm_madd_epi16 (SrcK_H, SrcC_H));
+		//_mm_madd_epi16 = (K7*C7), (K6 * C6), .... (K0*C0) 8 * 16 bit
 		SumV = _mm_add_epi32 (SumV, SumT);
 	}
 	int Sum = _mm_hsum_epi32 (SumV);

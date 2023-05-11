@@ -277,6 +277,7 @@ private:
 	void LoadSrc ();
 	void LoadDst ();
 	BOOL m_bShowResult;
+	vector<vector<Point>> m_vecChipContour;//hungdang
 public:
 	afx_msg void OnLoadDst ();
 	afx_msg void OnDropFiles (HDROP hDropInfo);
