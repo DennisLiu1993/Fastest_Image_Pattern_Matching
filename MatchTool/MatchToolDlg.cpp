@@ -866,8 +866,8 @@ BOOL CMatchToolDlg::Match ()
 			for (int j = 0; j < m_iMaxPos + MATCH_CANDIDATE_NUM - 1; j++)
 			{
 				ptMaxLoc = GetNextMaxLoc (matResult, ptMaxLoc, pTemplData->vecPyramid[iTopLayer].size (), dValue, m_dMaxOverlap, blockMax);
-				if (dMaxVal < vecLayerScore[iTopLayer])
-					continue;
+				if (dValue < vecLayerScore[iTopLayer])
+					break;
 				vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]));
 			}
 		}
@@ -880,8 +880,8 @@ BOOL CMatchToolDlg::Match ()
 			for (int j = 0; j < m_iMaxPos + MATCH_CANDIDATE_NUM - 1; j++)
 			{
 				ptMaxLoc = GetNextMaxLoc (matResult, ptMaxLoc, pTemplData->vecPyramid[iTopLayer].size (), dValue, m_dMaxOverlap);
-				if (dMaxVal < vecLayerScore[iTopLayer])
-					continue;
+				if (dValue < vecLayerScore[iTopLayer])
+					break;
 				vecMatchParameter.push_back (s_MatchParameter (Point2f (ptMaxLoc.x - fTranslationX, ptMaxLoc.y - fTranslationY), dValue, vecAngles[i]));
 			}
 		}
