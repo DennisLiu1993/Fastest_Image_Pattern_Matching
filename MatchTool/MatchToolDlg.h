@@ -316,13 +316,13 @@ public:
 	afx_msg void OnLvnKeydownListMsg (NMHDR *pNMHDR, LRESULT *pResult);
 	CButton m_bSubPixel;
 
-
 	afx_msg void OnBnClickedButtonChangeToleranceMode ();
 	BOOL m_bToleranceRange;
 	double m_dTolerance1;
 	double m_dTolerance2;
 	double m_dTolerance3;
 	double m_dTolerance4;
+	bool m_bStopLayer1;//FastMode
 
 	void PumpMessages ();
 	CComboBox m_cbLanSelect;

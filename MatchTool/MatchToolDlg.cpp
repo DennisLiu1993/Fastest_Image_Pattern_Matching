@@ -89,6 +89,7 @@ CMatchToolDlg::CMatchToolDlg(CWnd* pParent /*=nullptr*/)
 	, m_dTolerance2 (60)
 	, m_dTolerance3 (-110)
 	, m_dTolerance4 (-100)
+	, m_bStopLayer1(false)
 	, m_strTotalNum (_T (""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -932,7 +933,7 @@ BOOL CMatchToolDlg::Match ()
 
 	//第一階段結束
 	BOOL bSubPixelEstimation = m_bSubPixel.GetCheck ();
-	int iStopLayer = 0;
+	int iStopLayer = m_bStopLayer1 ? 1 : 0; //设置为1时：粗匹配，牺牲精度提升速度。
 	//int iSearchSize = min (m_iMaxPos + MATCH_CANDIDATE_NUM, (int)vecMatchParameter.size ());//可能不需要搜尋到全部 太浪費時間
 	vector<s_MatchParameter> vecAllResult;
 	for (int i = 0; i < (int)vecMatchParameter.size (); i++)
@@ -1049,7 +1050,8 @@ BOOL CMatchToolDlg::Match ()
 	FilterWithScore (&vecAllResult, m_dScore);
 
 	//最後濾掉重疊
-	iDstW = pTemplData->vecPyramid[iStopLayer].cols, iDstH = pTemplData->vecPyramid[iStopLayer].rows;
+	iDstW = pTemplData->vecPyramid[iStopLayer].cols * (iStopLayer == 0 ? 1 : 2);
+	iDstH = pTemplData->vecPyramid[iStopLayer].rows * (iStopLayer == 0 ? 1 : 2);
 
 	for (int i = 0; i < (int)vecAllResult.size (); i++)
 	{
@@ -1060,8 +1062,7 @@ BOOL CMatchToolDlg::Match ()
 		ptLB = Point2f (ptLT.x + iDstH * (float)sin (dRAngle), ptLT.y + iDstH * (float)cos (dRAngle));
 		ptRB = Point2f (ptRT.x + iDstH * (float)sin (dRAngle), ptRT.y + iDstH * (float)cos (dRAngle));
 		//紀錄旋轉矩形
-		Point2f ptRectCenter = Point2f ((ptLT.x + ptRT.x + ptLB.x + ptRB.x) / 4.0f, (ptLT.y + ptRT.y + ptLB.y + ptRB.y) / 4.0f);
-		vecAllResult[i].rectR = RotatedRect (ptRectCenter, pTemplData->vecPyramid[iStopLayer].size (), (float)vecAllResult[i].dMatchAngle);
+		vecAllResult[i].rectR = RotatedRect(ptLT, ptRT, ptRB);
 	}
 	FilterWithRotatedRect (&vecAllResult, CV_TM_CCOEFF_NORMED, m_dMaxOverlap);
 	//最後濾掉重疊
