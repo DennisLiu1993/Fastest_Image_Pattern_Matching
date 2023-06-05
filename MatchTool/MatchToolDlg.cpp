@@ -82,10 +82,10 @@ const Scalar colorGoldenrod (15, 185, 255);
 
 CMatchToolDlg::CMatchToolDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MATCHTOOL_DIALOG, pParent)
-	, m_iMaxPos (30)
-	, m_dMaxOverlap (0)
+	, m_iMaxPos (10)
+	, m_dMaxOverlap (0.1)
 	, m_dScore (0.8)
-	, m_dToleranceAngle (50)
+	, m_dToleranceAngle (180)
 	, m_iMinReduceArea (256)
 	, m_bDebugMode (FALSE)
 	, m_dTolerance1 (40)
@@ -212,7 +212,7 @@ BOOL CMatchToolDlg::OnInitDialog()
 		TRACE0 ("Can't create status bar\n");
 		return false;
 	}
-	m_statusBar.SetPaneInfo (0, indicators[0], SBPS_NOBORDERS, 150);//设置状态栏的宽度
+	m_statusBar.SetPaneInfo (0, indicators[0], SBPS_NOBORDERS, 350);//设置状态栏的宽度
 	m_statusBar.SetPaneInfo (1, indicators[1], SBPS_STRETCH, 200);
 	m_statusBar.SetPaneInfo (2, indicators[2], SBPS_STRETCH, 200);
 	m_statusBar.SetPaneInfo (3, indicators[3], SBPS_STRETCH, 200);
@@ -384,18 +384,6 @@ void CMatchToolDlg::RefreshSrcView ()
 			string str = format ("%d", i);
 			putText (matResize, str, (ptLT + ptRT) / 2, FONT_HERSHEY_PLAIN, 1, colorGreen);
 
-			//Draw contour
-			drawContours(matResize, vecChipDraw, i, colorGreen);
-			//hull
-			RotatedRect rRect = fitEllipse(m_vecChipContour[i]);
-			double dEArea = rRect.size.width * rRect.size.height / 4 * CV_PI;
-			rRect.center *= m_dNewScale;
-			rRect.size.width *= m_dNewScale;
-			rRect.size.height *= m_dNewScale;
-			double dArea = contourArea(m_vecChipContour[i]);
-			ellipse(matResize, rRect, colorRed);
-			String strA = format("%.3f", dArea / dEArea);
-			putText(matResize, strA, ptC - Point(8, 0), FONT_HERSHEY_PLAIN, 1.0, colorRed);
 		}
 	}
 
@@ -1119,28 +1107,7 @@ BOOL CMatchToolDlg::Match ()
 		m_vecSingleTargetData.push_back (sstm);
 
 		
-		//HungDang
-		
-		vector<Point2f> vec = { sstm.ptLT, sstm.ptLB, sstm.ptRT, sstm.ptRB };
-		Rect rectBounding = boundingRect(vec);
-		Mat mat = m_matSrc (rectBounding), matB;
-		//GetRotatedROI(m_matSrc, m_matDst.size(), sstm.ptLT, -sstm.dMatchedAngle, mat);
 
-		threshold(mat, matB, 128, 255, THRESH_BINARY | THRESH_OTSU);
-		vector<vector<Point>> contours;
-		vector<Vec4i> hierarchy;
-		findContours(matB, contours, hierarchy, RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-		sort(contours.begin(), contours.end(), compareContours);
-		if (contours.size()) {
-			for (int i = 0; i < contours[0].size(); i++)
-				contours[0][i] += rectBounding.tl();
-		}
-		m_vecChipContour.push_back(contours[0]);
-		//drawContours(mat, contours, 0, colorGreen);
-
-		/*String strT = format("C:\\Users\\User\\Downloads\\hundang\\%d.bmp", i);
-		strT = format("C:\\Users\\User\\Downloads\\hundang\\%d-c.bmp", i);
-		imwrite(strT, mat);*/
 
 
 		//Test Subpixel
@@ -1513,7 +1480,8 @@ Size CMatchToolDlg::GetBestRotationSize (Size sizeSrc, Size sizeDst, double dRAn
 		|| (sizeDst.width > sizeRet.width && sizeDst.height < sizeRet.height
 			|| sizeDst.area () > sizeRet.area ());
 	if (bWrongSize)
-		sizeRet = Size (int (fRightX - fLeftX + 0.5), int (fTopY - fBottomY + 0.5));
+		sizeRet = Size (sizeSrc.width* sizeSrc.width, sizeSrc.height* sizeSrc.height);
+		//sizeRet = Size (int (fRightX - fLeftX + 0.5), int (fTopY - fBottomY + 0.5));
 
 	return sizeRet;
 }
