@@ -11,6 +11,8 @@ The result means the similarity of two images, and the formular is as followed:
 2. using image pyrimid as a searching strategy to speed up 4~128 times the original NCC method (depending on template size), minimizing the inspection area on the top level of image pyrimid
 3. optimizing rotation time comsuming from OpenCV by setting needed "size" and modifying rotation matrix
 4. **SIMD version of image convolution** (especially useful for large templates)
+   
+   **4.1 update Neon SIMD on MacOS version .so, super fast**
 5. optimizing the function GetNextMaxLoc () with struct s_BlockMax, for special cases whose template sizes are extremely smaller than source sizes, and for large TargetNumber. 
    
    It gets quite far.
@@ -120,9 +122,12 @@ test7 (18ms, TargetNum=100, Score=0.5, Tolerance Angle=0, MaxOverlap=0.5, Min Re
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/NCCBasedOCR.gif)
 
-# Special Items (contact information: dennisliu1993@gmail.com)
-1. C++/MFC dll for .Net framework
-2. pure C++ dll for Python
+# Special Items 
+contact information: dennisliu1993@gmail.com
+1. C++ shared library (.so) for python (MacOS)
+2. C++/MFC dll for .Net framework (Windows)
+3. pure C++ dll for Python (Windows)
+
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/FPMLib_for_Python.gif)
 
