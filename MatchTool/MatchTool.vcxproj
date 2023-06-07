@@ -39,13 +39,13 @@
     <ProjectGuid>{EF3F0D87-D9D4-4971-A005-1899D08ED33C}</ProjectGuid>
     <Keyword>MFCProj</Keyword>
     <RootNamespace>ELCVMatchTool</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
@@ -66,7 +66,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
@@ -132,9 +132,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\OpenCV3.1\opencv\build\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\OpenCV3.1\build2017_world\lib;$(LibraryPath)</LibraryPath>
-    <OutDir>C:\OpenCV3.1\build2017_world\bin\</OutDir>
+    <IncludePath>..\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>ExeDir\</OutDir>
     <TargetName>$(ProjectName)_D</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_4.X|Win32'">
@@ -166,9 +166,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>C:\OpenCV3.1\build2017_world\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\OpenCV3.1\opencv\build\include;$(IncludePath)</IncludePath>
-    <OutDir>C:\OpenCV3.1\build2017_world\bin\</OutDir>
+    <LibraryPath>..\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\include;$(IncludePath)</IncludePath>
+    <OutDir>ExeDir\</OutDir>
     <TargetName>$(ProjectName)_R</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -40,6 +40,7 @@ Debug/
 Release/
 Debug_4.X/
 Release_4.X/
+Include/
 *.opensdf
 *.tlog
 *.log

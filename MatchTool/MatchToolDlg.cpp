@@ -79,9 +79,9 @@ const Scalar colorGoldenrod (15, 185, 255);
 
 CMatchToolDlg::CMatchToolDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MATCHTOOL_DIALOG, pParent)
-	, m_iMaxPos (10)
+	, m_iMaxPos (70)
 	, m_dMaxOverlap (0)
-	, m_dScore (0.8)
+	, m_dScore (0.5)
 	, m_dToleranceAngle (0)
 	, m_iMinReduceArea (256)
 	, m_bDebugMode (FALSE)
