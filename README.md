@@ -1,6 +1,6 @@
 # New feature: 
 C++ shared object(.so) with Neon SIMD is runnable on Unix(Ventura 13.3) and Linux(Ubuntu 22.04.02) System. (extremely speed up)
-[Contact](README.md) and scroll to line 130.
+Contact: dennisliu1993@gmail.com
 
 # Fastest Image Pattern Matching
 **The best template matching implementation on the Internet.**
