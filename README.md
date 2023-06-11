@@ -124,15 +124,16 @@ test7 (18ms, TargetNum=100, Score=0.5, Tolerance Angle=0, MaxOverlap=0.5, Min Re
 # This project can also be used as Optical Character Recognition (OCR)
 [youtube link](https://www.youtube.com/watch?v=lM0NK6xVNfg)
 
+
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/NCCBasedOCR.gif)
 
 # Special Items 
 contact information: dennisliu1993@gmail.com
-1. C++ shared library (.so) for python (Unix-MacOS, Ubuntu22.04.02-MacOS)
+1. C++ shared library (.so) for python (Unix-MacOS, Ubuntu 22.04.02-MacOS)
 2. C++/MFC dll for .Net framework (Windows)
 3. pure C++ dll for Python (Windows)
 
-
+![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/macFPM.gif)
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/FPMLib_for_Python.gif)
 
 # Reference Papers
