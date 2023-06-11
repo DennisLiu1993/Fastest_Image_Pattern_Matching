@@ -1,3 +1,5 @@
+New feature: C++ (.so) with Neon SIMD is runnable on Unix and Linux System. (extremely fast)
+
 # Fastest Image Pattern Matching
 **The best template matching implementation on the Internet.**
 
