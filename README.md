@@ -1,6 +1,5 @@
 # New feature: 
-C++ shared object(.so) with Neon SIMD is runnable on Unix(Ventura 13.3) and Linux(Ubuntu 22.04.02) System. (extremely speed up)
-Contact: dennisliu1993@gmail.com
+C++ shared object (.so) with Neon SIMD (test case 122ms->0.6ms) is runnable on Unix (Ventura 13.3) and Linux (Ubuntu Linux 22.04.02) System. 
 
 # Fastest Image Pattern Matching
 **The best template matching implementation on the Internet.**
@@ -129,7 +128,7 @@ test7 (18ms, TargetNum=100, Score=0.5, Tolerance Angle=0, MaxOverlap=0.5, Min Re
 
 # Special Items 
 contact information: dennisliu1993@gmail.com
-1. C++ shared library (.so) for python (Unix-MacOS, Ubuntu 22.04.02-MacOS)
+1. C++ shared library (.so) for python (Unix-ARM64, Ubuntu 22.04.02-ARM64)
 2. C++/MFC dll for .Net framework (Windows)
 3. pure C++ dll for Python (Windows)
 
