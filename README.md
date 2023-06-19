@@ -1,5 +1,6 @@
 # New feature: 
 1. C++ shared object (.so) with Neon SIMD is runnable on Unix (Ventura 13.3) and Linux (Ubuntu Linux 22.04.02) System. 
+   Super fast using -O3
 2. Pybind11 support
 
 # Fastest Image Pattern Matching
