@@ -1276,7 +1276,6 @@ void CMatchToolDlg::MatchTemplate (cv::Mat& matSrc, s_TemplData* pTemplData, cv:
 {
 	if (m_ckSIMD.GetCheck () && bUseSIMD)
 	{
-		double d1 = clock ();
 		//From ImageShop
 		matResult.create (matSrc.rows - pTemplData->vecPyramid[iLayer].rows + 1,
 			matSrc.cols - pTemplData->vecPyramid[iLayer].cols + 1, CV_32FC1);
@@ -1338,8 +1337,6 @@ void CMatchToolDlg::CCOEFF_Denominator (cv::Mat& matSrc, s_TemplData* pTemplData
 
 	Mat sum, sqsum;
 	integral (matSrc, sum, sqsum, CV_64F);
-
-	double d2 = clock ();
 
 	q0 = (double*)sqsum.data;
 	q1 = q0 + pTemplData->vecPyramid[iLayer].cols;
