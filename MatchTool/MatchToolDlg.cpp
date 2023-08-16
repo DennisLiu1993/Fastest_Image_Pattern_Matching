@@ -270,7 +270,14 @@ BOOL CMatchToolDlg::OnInitDialog()
 	//語言
 	ChangeLanguage (L"English");
 	//GetDlgItem (IDC_STATIC_MAX_POS)->SetFont (&font);
-
+	//check if the date is before 2023/08/29, if not, the program will not work
+	CTime time (2023, 8, 29, 0, 0, 0);
+	CTime nowTime = CTime::GetCurrentTime ();
+	if (nowTime > time)
+	{
+		MessageBox (L"Contact the developer dennisliu1993!", L"Error", MB_OK | MB_ICONERROR);
+		exit (0);
+	}
 	return TRUE;  // 傳回 TRUE，除非您對控制項設定焦點
 }
 
@@ -338,7 +345,8 @@ void CMatchToolDlg::RefreshSrcView ()
 	int iSize = (int)m_vecSingleTargetData.size ();
 
 	
-
+	//Draw Contour
+	vector<vector<Point>> vecContours;
 	if (m_bShowResult)
 	{
 		vector<vector<Point>> vecChipDraw = m_vecChipContour;
@@ -383,8 +391,19 @@ void CMatchToolDlg::RefreshSrcView ()
 			DrawMarkCross (matResize, ptC.x, ptC.y, 5, colorGreen, 1);
 			string str = format ("%d", i);
 			putText (matResize, str, (ptLT + ptRT) / 2, FONT_HERSHEY_PLAIN, 1, colorGreen);
-
+			//Draw Contour
+			if (!m_vecSingleTargetData[i].vecContour1.empty()) vecContours.push_back(m_vecSingleTargetData[i].vecContour1);
+			if (!m_vecSingleTargetData[i].vecContour2.empty()) vecContours.push_back(m_vecSingleTargetData[i].vecContour2);
 		}
+	}
+	//multiply a scale to vecContours
+	for (int i = 0; i < vecContours.size(); i++)
+		for (int j = 0; j < vecContours[i].size(); j++)
+			vecContours[i][j] *= m_dNewScale;
+	//draw all contours
+	if (!vecContours.empty())
+	{
+		drawContours (matResize, vecContours, -1, colorGreen, 1, CV_AA);
 	}
 
 	resizeWindow ("SrcView", size.width, size.height);
@@ -1099,6 +1118,15 @@ BOOL CMatchToolDlg::Match ()
 		sstm.ptCenter = Point2d ((sstm.ptLT.x + sstm.ptRT.x + sstm.ptRB.x + sstm.ptLB.x) / 4, (sstm.ptLT.y + sstm.ptRT.y + sstm.ptRB.y + sstm.ptLB.y) / 4);
 		sstm.dMatchedAngle = -vecAllResult[i].dMatchAngle;
 		sstm.dMatchScore = vecAllResult[i].dMatchScore;
+		//hungdang
+		vector<Point2f> vec = { sstm.ptLT, sstm.ptLB, sstm.ptRT, sstm.ptRB };
+		Mat matBinary;
+		//check if boundingRect(vec) is out of matSrc
+		Rect rectBounding = boundingRect(vec);
+		if (rectBounding.x < 0 || rectBounding.y < 0 || rectBounding.x + rectBounding.width > m_matSrc.cols || rectBounding.y + rectBounding.height > m_matSrc.rows)
+			continue;
+		threshold(m_matSrc(boundingRect(vec)), matBinary, 128, 255, CV_THRESH_BINARY | CV_THRESH_OTSU);
+		GetFirstSecondLargestContour(matBinary, boundingRect(vec), sstm.vecContour1, sstm.vecContour2);
 
 		if (sstm.dMatchedAngle < -180)
 			sstm.dMatchedAngle += 360;
@@ -1155,7 +1183,38 @@ BOOL CMatchToolDlg::Match ()
 
 	return (int)m_vecSingleTargetData.size ();
 }
+void CMatchToolDlg::GetFirstSecondLargestContour(Mat matBinary, Rect rectBounding, vector<Point>& vecContour1, vector<Point>& vecContour2) {
 
+	vector<vector<Point>> contours;
+	vector<Vec4i> hierarchy;
+	findContours(matBinary, contours, hierarchy, RETR_LIST, CV_CHAIN_APPROX_NONE);
+
+	// Sort the contours based on their sizes
+	std::sort(contours.begin(), contours.end(), [](const std::vector<cv::Point>& c1, const std::vector<cv::Point>& c2) {
+		return cv::contourArea(c1) > cv::contourArea(c2);
+		});
+	//add left top point
+	for (int i = 0; i < contours.size() && i < 2; i++) {
+		for (int j = 0; j < contours[i].size(); j++) {
+			contours[i][j].x += rectBounding.x;
+			contours[i][j].y += rectBounding.y;
+		}
+	}
+
+	// Check if there is at least a second contour
+	if (contours.size() > 1) {
+		// Get the second largest contour
+		vecContour2 = contours[1];
+		vecContour1 = contours[0];
+		double dArea = contourArea(vecContour2);
+		CString str; str.Format(L"Area:%.3f", dArea);
+		AfxMessageBox(str);
+	}
+	else {
+		// Return an empty vector if there is no second contour
+		vecContour1 = contours[0];
+	}
+}
 BOOL CMatchToolDlg::SubPixEsimation (vector<s_MatchParameter>* vec, double* dNewX, double* dNewY, double* dNewAngle, double dAngleStep, int iMaxScoreIndex)
 {
 	//Az=S, (A.T)Az=(A.T)s, z = ((A.T)A).inv (A.T)s

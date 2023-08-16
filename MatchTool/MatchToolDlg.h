@@ -85,6 +85,9 @@ struct s_SingleTargetMatch
 	Point2d ptLT, ptRT, ptRB, ptLB, ptCenter;
 	double dMatchedAngle;
 	double dMatchScore;
+	//hungdang
+	vector<Point> vecContour1;//biggest
+	vector<Point> vecContour2;//second biggest
 };
 struct s_BlockMax
 {
@@ -278,6 +281,7 @@ private:
 	void LoadDst ();
 	BOOL m_bShowResult;
 	vector<vector<Point>> m_vecChipContour;//hungdang
+	void GetFirstSecondLargestContour(Mat matBinary, Rect rectBounding, vector<Point>& vecContour1, vector<Point>& vecContour2);
 public:
 	afx_msg void OnLoadDst ();
 	afx_msg void OnDropFiles (HDROP hDropInfo);

@@ -166,9 +166,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>C:\Users\User\source\repos\FPMLib\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\User\source\repos\FPMLib\Include;$(IncludePath)</IncludePath>
-    <OutDir>C:\OpenCV3.1\build2017_world\bin\</OutDir>
+    <LibraryPath>..\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\Include;$(IncludePath)</IncludePath>
+    <OutDir>ExeDir</OutDir>
     <TargetName>$(ProjectName)_R</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
