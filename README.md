@@ -141,3 +141,41 @@ contact information: dennisliu1993@gmail.com
 # Reference Papers
 1. [Template Matching using Fast Normalized Cross Correlation](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Template%20Matching%20using%20Fast%20Normalized%20Cross%20Correlation.pdf)
 2. [computers_and_electrical_engineering_an_accelerating_cpu_based_correlation-based_image_alignment](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/computers_and_electrical_engineering_an_accelerating_cpu_based_correlation-based_image_alignment.pdf)
+
+# Special Note:
+
+If you encounter an error(exception) on the constructor of opencv class "RotatedRect", modify the content in `types.cpp`:
+this might due to Windows updates
+
+```cpp
+RotatedRect::RotatedRect(const Point2f& _point1, const Point2f& _point2, const Point2f& _point3)
+{
+    Point2f _center = 0.5f * (_point1 + _point3);
+    Vec2f vecs[2];
+    vecs[0] = Vec2f(_point1 - _point2);
+    vecs[1] = Vec2f(_point2 - _point3);
+    double x = std::max(norm(_point1), std::max(norm(_point2), norm(_point3)));
+    double a = std::min(norm(vecs[0]), norm(vecs[1]));
+    // check that given sides are perpendicular
+    // this is the line you need to modify
+    CV_Assert( std::fabs(vecs[0].ddot(vecs[1])) * a <= FLT_EPSILON * 9 * x * (norm(vecs[0]) * norm(vecs[1])) );
+
+    // wd_i stores which vector (0,1) or (1,2) will make the width
+    // One of them will definitely have slope within -1 to 1
+    int wd_i = 0;
+    if( std::fabs(vecs[1][1]) < std::fabs(vecs[1][0]) ) wd_i = 1;
+    int ht_i = (wd_i + 1) % 2;
+
+    float _angle = std::atan(vecs[wd_i][1] / vecs[wd_i][0]) * 180.0f / (float) CV_PI;
+    float _width = (float) norm(vecs[wd_i]);
+    float _height = (float) norm(vecs[ht_i]);
+
+    center = _center;
+    size = Size2f(_width, _height);
+    angle = _angle;
+}
+```
+
+modify threshold value of **CV_Assert line** to a bigger one
+
+then recompile the source code
