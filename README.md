@@ -1,15 +1,17 @@
-# New feature: 
-1. C++ shared object (.so) with Neon SIMD for **Python** is runnable on Unix (Ventura 13.3) and Linux (Ubuntu Linux 22.04.02) System. 
-   Super fast using -O3
-2. C++ .so with Pybind11 for **Python**
-
 # Fastest Image Pattern Matching
-**The best template matching implementation on the Internet.**
+## **The best template matching implementation in the world.**
 
 Using C++/MFC/OpenCV to build a Normalized Cross Corelation-based image alignment algorithm
 
 The result means the similarity of two images, and the formular is as followed:
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Image/NCC.jpg)
+![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Image/HighLevel.png)
+
+# New feature: 
+1. C++ shared object (.so) with Neon SIMD for **Python** is runnable on Unix (Ventura 13.3) and Linux (Ubuntu Linux 22.04.02) System. 
+   Super fast using -O3
+2. C++ .so with Pybind11 for **Python**
+![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Image/CrossPlatform.png)
 
 # Improvements
 1. rotation invariant, and rotation precision is as high as possible
