@@ -29,9 +29,19 @@ The result means the similarity of two images, and the formular is as followed:
       **Effect: time consuming reduces from 534 ms to 100 ms. speed up 434%**
 
 # In Comparison with commercial libraries
-[Inspection Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src7.bmp) : 4024 X 3036 
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Src7.bmp" alt="Inspection Image" width="400"><br>
+      Inspection Image: 4024 X 3036
+    </td>
+    <td align="center">
+      <img src="https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Dst7.bmp" alt="Template Image" width="100"><br>
+      Template Image: 762 X 521
+    </td>
+  </tr>
+</table>
 
-[Template Image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Test%20Images/Dst7.bmp): 762 X 521
 Library    |Index | Score | Angle | PosX | PosY | Execution Time
 ---------  |----- |-------|-------| -----  | -----  |----------------------
 My Tool    |0     |   1   | 0.046 |1725.857|1045.433| **76ms**  🎖️
@@ -46,38 +56,19 @@ Aisys    |2     |  0.979   | 120.000 |1769.63|2099.780|
 
 **note**: if you want to get a best performance, please make sure you are using release verson (both this project and OpenCV dll). That's because O2-related settings significantly affects efficiency, and the difference of Debug and Release can up to 7 times for some cases.
 
-# Tests (with I7-10700)
-
-test0 - with user interface
-
+# Performance Tests (I7-10700)
+**test0** - with user interface
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Image/UIwithResult.jpg)
 
-test1 (164ms 80ms (SIMD version), TargetNum=5, Overlap=0.8, Score=0.8, Tolerance Angle=180)
-
-![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result8.jpg)
-
-test2 (237 ms, 175ms (SIMD Version))
-
-![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result1.jpg)
-
-test3 (152 ms, 100ms (SIMD Version))
-
-![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result2.jpg)
-
-test4 (21 ms, Target Number=38, Score=0.8, Tolerance Angle=0, Min Reduced Area=256)
-
-![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result3.jpg)
-
-test5 (27 ms)
-
-![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result4.jpg)
-
-test6 (1157ms, 657ms (SIMD Version), Target Number=15, Score=0.8, Tolerance Angle=180, Min Reduced Area=256)
-
-![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result6.jpg)
-
-test7 (18ms, TargetNum=100, Score=0.5, Tolerance Angle=0, MaxOverlap=0.5, Min Reduced Area=1024)
-![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result9.jpg)
+| Test | Metrics | Image |
+|------|---------|-------|
+| **Test1** | **Execution Time**:<br>164ms<br>(80ms with SIMD)<br><br>**Parameters**:<br> TargetNum=5<br>Overlap=0.8<br>Score=0.8<br>Tolerance Angle=180 | <img src="https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result8.jpg" alt="Test 1 Result" width="800"> |
+| **Test2** | **Execution Time**:<br>237ms<br>(175ms with SIMD) | <img src="https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result1.jpg" alt="Test 2 Result" width="800"> |
+| **Test3** | **Execution Time**:<br>152ms<br>(100ms with SIMD) | <img src="https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result2.jpg" alt="Test 3 Result" width="800"> |
+| **Test4** | **Execution Time**:<br>21ms<br><br>**Parameters**:<br>TargetNum=38<br>Score=0.8<br>Tolerance Angle=0<br>Min Reduced Area=256 | <img src="https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result3.jpg" alt="Test 4 Result" width="800"> |
+| **Test5** | **Execution Time**:<br>27ms | <img src="https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result4.jpg" alt="Test 5 Result" width="800"> |
+| **Test6** | **Execution Time**:<br>1157ms<br>(657ms with SIMD)<br><br>**Parameters**:<br>TargetNum=15<br>Score=0.8<br>Tolerance Angle=180<br>Min Reduced Area=256 | <img src="https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result6.jpg" alt="Test 6 Result" width="800"> |
+| **Test7** | **Execution Time**:<br>18ms<br><br>**Parameters**:<br>TargetNum=100<br>Score=0.5<br>Tolerance Angle=0<br>MaxOverlap=0.5<br>Min Reduced Area=1024 | <img src="https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Result%20Images/Result9.jpg" alt="Test 7 Result" width="800"> |
 
 # Steps to build this project
 1.	Download Visual Studio 2017 or newer versions
