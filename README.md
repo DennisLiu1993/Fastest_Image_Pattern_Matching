@@ -121,12 +121,11 @@ Aisys    |2     |  0.979   | 120.000 |1769.63|2099.780|
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/NCCBasedOCR.gif)
 
-# Special Items 
+# Cross-Platform support
 contact information: dennisliu1993@gmail.com
-1. C++ shared library (.so) for python (Unix-ARM64, Ubuntu 22.04.02-ARM64)
+1. C++ shared library (.so) for python (Unix-ARM64, Ubuntu 22.04.02-ARM64, Linux)
 2. C++/MFC dll for .Net framework (Windows)
 3. pure C++ dll for Python (Windows)
-4. pybind11 .so
 
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/macFPM.gif)
 ![image](https://github.com/DennisLiu1993/Fastest_Image_Pattern_Matching/blob/main/Manual%20Gif/FPMLib_for_Python.gif)
